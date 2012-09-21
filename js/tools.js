@@ -205,4 +205,4 @@ function defaultFor(arg, val) { return typeof arg !== 'undefined' ? arg : val; }
              .on('selectstart', false);
 };
 })(jQuery);
-$('body').disableSelection();
+$('*').disableSelection().contextmenu(function(){return false;});

@@ -111,7 +111,7 @@ function gotCharacter(response){
 		$.each(response.character, function(index,thisChar) {
 			//thisChar = this;
 			if (MAP.path[thisChar.map_id.substr(7)] == 1){
-				if (Char[thisChar.character_id]){
+				if (typeof Char[thisChar.character_id] !== 'undefined'){
 					//console.log('Move Character : '+thisChar.character_name+'('+thisChar.character_id+')');
 					Char[thisChar.character_id].character_model.character_active = thisChar.character_active +'<div>('+moment(thisChar.character_last_active, "YYYY-MM-DD hh:mm:ss").fromNow()+')</div>';
 					Char[thisChar.character_id].refreshContextMenu();

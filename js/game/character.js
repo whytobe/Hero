@@ -38,23 +38,25 @@ function Character(character_model,isMe){
 		top : this.offset.top + 'px',
 		left : this.offset.left + 'px'
 	})
-	this.contextMenu = $('<ul id="context_'+this.id+'" class="contextMenu"><li class="name"><a></a></li><li class="active separator"><a></a></li><li class="quit separator"><a>Quit</a></li></ul>');
-	this.contextMenu.find('.name a').html(this.name);
-	this.contextMenu.find('.active a').html(this.character_model.character_active);
-	this.contextMenu.find('.quit a').html('เพิ่มเป็นเพื่อน');
-	this.contextMenu.appendTo($('#contextCanvas'));
-	this.model.contextMenu({
-					menu: 'context_'+this.id
-				}, function(action, el, pos) {
-					alert(
-						'Action: ' + action + '\n\n' +
-						'Element text: ' + $(el).text() + '\n\n' + 
-						'X: ' + pos.x + '  Y: ' + pos.y + ' (relative to element)\n\n' + 
-						'X: ' + pos.docX + '  Y: ' + pos.docY+ ' (relative to document)'
-						);
-				});
+	
+	this.model.attr('character_id',this.id);
+	
+	if (!this.isMe){
+		this.contextMenu = $('<ul id="context_'+this.id+'" class="contextMenu"/>');
+		$('<li/>').addClass('name').append($('<a/>').attr('href','#name').html(this.name)).appendTo(this.contextMenu);
+		$('<li/>').addClass('active').append($('<a/>').attr('href','#active').html(this.character_model.character_active)).appendTo(this.contextMenu);
+		$('<li/>').addClass('addfriend separator').append($('<a/>').attr('href','#addfriend').html('เพิ่มเป็นเพื่อน')).appendTo(this.contextMenu);
+		this.contextMenu.appendTo($('#contextCanvas'));
+		this.model.contextMenu({
+						menu: 'context_'+this.id
+					}, function(action, el, pos) {
+						console.log(
+							'Action: ' + action + ', Character ID: ' + $(el).attr('character_id') + '\n\n' 
+							);
+					});
+	}
 	this.refreshContextMenu = function(){
-		this.contextMenu.find('.active a').html(this.character_model.character_active);
+		if (typeof this.contextMenu !== 'undefined') this.contextMenu.find('.active a').html(this.character_model.character_active);
 	}
 	
 	//this.refreshContextMenu();
@@ -81,7 +83,7 @@ function Character(character_model,isMe){
 	
 	this.clear = function(){
 		this.model.fadeOut('slow',function(){$(this).remove()});
-		this.contextMenu.remove();
+		if (typeof this.contextMenu !== 'undefined') this.contextMenu.remove();
 	}
 	
 	this.move = function(target){
