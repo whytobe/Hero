@@ -47,10 +47,10 @@ function apprise(string, args, callback)
 			$('.appriseOuter').css('top', '-200px').show().animate({top:"100px"}, aniSpeed);
 			}
 		else
-			{ $('.appriseOuter').css('top', '100px').fadeIn(200); }
+			{ $('.appriseOuter').css({'top': '50%','margin-top':'-'+($('.appriseOuter').height()/2)+'px'}).fadeIn(200); }
 		}
 	else
-		{ $('.appriseOuter').css('top', '100px').fadeIn(200); }
+		{ $('.appriseOuter').css({'top': '50%','margin-top':'-'+($('.appriseOuter').height()/2)+'px'}).fadeIn(200); }
     
     if(args)
     	{
