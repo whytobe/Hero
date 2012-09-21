@@ -1,0 +1,44 @@
+#mapCanvas.town01{
+	background:url('../img/map/town01.png') no-repeat center center transparent;
+}
+
+#mapCanvas{
+	width:100%;
+	height:100%;
+}
+
+#pathCanvas {
+	left:0;
+	top:0;
+	position:absolute;
+	display:block;
+}
+
+#pathCanvas .block{
+	display:block;
+	width:32px;
+	height:32px;
+	float:left;
+	
+	font-family: Tahoma;
+	font-size:12px;
+	text-align:center;
+	vertical-align: middle;
+	line-height:32px;
+	/*margin:-1px;
+	border:1px solid gold;*/
+	
+	
+}
+
+#pathCanvas .block.move:hover{
+	background:url('../img/move.png') center center no-repeat transparent;
+}
+
+#pathCanvas .block.event:hover{
+	background:url('../img/event.png') center center no-repeat transparent;
+}
+
+#contextCanvas {
+	
+}

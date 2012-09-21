@@ -1,0 +1,38 @@
+#charCanvas{
+	width:100%;
+	height:100%;
+	position:absolute;
+	top:0;left:0;
+	
+	margin:-1px;
+	border:1px solid #f00;
+}
+
+#charCanvas .Character{
+    width:32px;
+    height:32px;
+    position:absolute;
+    z-index:9;
+    visibility:visible;
+    background:transparent no-repeat center;
+    background-position:-128px 0px;
+    background-image:url('../img/char/99.gif');
+}
+
+#charCanvas .Character .name {
+    color:#fff;
+    text-shadow:1px 1px 1px #000000;
+    font-size:11px;
+    width:100px;
+    max-height:15px;
+    overflow:hidden;                
+    margin-left:-34px;
+    margin-top:30px;
+    text-align:center;
+}
+
+#charCanvas .Character.me .name {
+    color:#08FFB1;
+}
+
+
