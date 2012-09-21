@@ -83,7 +83,7 @@
 		
 		function getCharacters(){
 			$reader = new Reader();
-			$reader->commandText = 'select character_id,character_name,map_id,character_active,character_last_active from characters where substr(map_id,8) not in(select map_position from map_event where map_id = \''.substr($this->character[map_id], 0,6).'%\') and map_id like \''.substr($this->character[map_id], 0,6).'%\' and character_id != '.$this->character[character_id];
+			$reader->commandText = 'select character_id,character_name,map_id,character_active,character_last_active from characters where substr(map_id,8) not in(select map_position from map_event where map_id = \''.substr($this->character[map_id], 0,6).'\') and map_id like \''.substr($this->character[map_id], 0,6).'%\' and character_id != '.$this->character[character_id];
 			if ($reader->hasRow()){
 				$result = new Result();
 				while ($db = $reader->read()){
