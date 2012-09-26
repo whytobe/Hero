@@ -5,15 +5,45 @@
 *
 **/
 var load = new LoadInfo();
+
 function LoadInfo(){
 	this.show = function(){
-		close();
-		apprise('กำลังรับข้อมูล.. , กรุณารอสักครู่',{button:false});
+		if ($('.appriseOverlay,.appriseOuter')){
+			$('.appriseOverlay,.appriseOuter').remove();	
+		}
+		apprise('นายน้อย, กรุณารอสักครู่',{button:false});
+	}
+	
+	this.update = function(text){
+		$('.appriseOverlay,.appriseOuter').remove();
+		apprise(text);
 	}
 	
 	this.close = function(){
 		appriseClose();
 	}
+ }
+ function loadPage(page){
+ 	$.fancybox.open({
+        type:'ajax',
+        modal:true,
+		href:'pages/'+page.url,
+		title:page.title,
+		autoSize:true,
+		beforeShow : load.close
+		
+	});
+ }
+ function openPage(page){
+ 	$.fancybox.open({
+        type:'iframe',
+		iframe:{
+			preload : false
+		},
+		href:'pages/'+page.url,
+		title:page.title,
+		beforeShow : load.close
+	});
  }
  
 function SHA1 (msg) {
@@ -185,11 +215,10 @@ function SHA1 (msg) {
 }
 
 function action(inputAction,inputData,callback){
-	$.post('lib/action.php',{action:inputAction,data:inputData},function(response){
+	return $.post('lib/action.php',{action:inputAction,data:inputData},function(response){
 		if (response.error){
-			$('.appriseOverlay,.appriseOuter').remove();
-			console.log(response.error + ',' +response.message);
-			apprise('เกิดข้อผิดพลาด! กรุณาลองใหม่อีกครั้ง');
+			console.log(response.error );
+			load.update('เกิดข้อผิดพลาด! กรุณาลองใหม่อีกครั้ง<br/>'+ errorMsg[response.error.code].title  +', '+errorMsg[response.error.code].description);
 		} else {
 			callback(response);
 		}
@@ -205,4 +234,4 @@ function defaultFor(arg, val) { return typeof arg !== 'undefined' ? arg : val; }
              .on('selectstart', false);
 };
 })(jQuery);
-$('*').disableSelection().contextmenu(function(){return false;});
+$('*').contextmenu(function(){return false;});

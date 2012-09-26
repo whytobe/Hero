@@ -4,8 +4,8 @@
 	position:absolute;
 	top:0;left:0;
 	
-	margin:-1px;
-	border:1px solid #f00;
+	/*margin:-1px;
+	border:1px solid #f00;*/
 }
 
 #charCanvas .Character{
@@ -21,7 +21,7 @@
 
 #charCanvas .Character .name {
     color:#fff;
-    text-shadow:1px 1px 1px #000000;
+    text-shadow:1px 1px 3px #000000;
     font-size:11px;
     width:100px;
     max-height:15px;

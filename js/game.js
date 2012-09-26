@@ -1,11 +1,36 @@
 var enableCache = false; // for debug.
 var enableRefresh = true; // for refresh.
+var refreshXHR; // the XHR refresher.
+var refreshTimer; // the refresher timeer/
 var permanotice = null;
+var requestBattle = null;
 var Char = Array();
 var me = null;
+var refreshData = new Object();
+var waitForBattle = false;
+var battle = null;
 $.getScript("js/vendor/jquery-ui-1.8.23.custom.min.js",loadPinesScript,enableCache);
 function loadPinesScript(){
-	$.getScript("js/pines/jquery.pnotify.min.js",loadMapScript,enableCache);
+	$.getScript("js/pines/jquery.pnotify.min.js",loadErrorScript,enableCache);
+}
+function loadErrorScript(){
+	$.pnotify.defaults.styling = "jqueryui";
+	$.pnotify.defaults.history = false;
+    if (permanotice) {
+    	permanotice.pnotify_display();
+    } else {
+   	 	permanotice = $.pnotify({
+		    title: 'Loading Error Helper....',
+		    text: 'Error Helper function is loading..',
+		    type: 'info',
+			//nonblock: true,
+			animate_speed: 'fast',
+		    hide: false,
+		    closer: false,
+		    sticker: false
+	    });
+    }
+	$.getScript("js/game/error.js",loadMapScript,enableCache);
 }
 function loadMapScript(){
 	$.pnotify.defaults.styling = "jqueryui";
@@ -55,6 +80,7 @@ function loadCharacterScript(){
 	    	$.pnotify_remove_all(); // Clear all notification.
 	    	handle(response);
 	    	refreshGame();
+	    	$.getScript("js/game/battle.js",null,enableCache);
 	    });
 	},enableCache);
 }
@@ -65,15 +91,34 @@ function handle(response){
 	if (response.character) gotCharacter(response); // Handle event when got character data.
 	if (response.me) gotMe(response); // Handle event when got me.
 	if (response.page) gotPage(response); // Handle event when got page event.
+	if (response.notice) gotNotice(response.notice); // Handle event when receive request battle.
+	
+	if (waitForBattle && !response.notice){
+		load.update('คู่ต่อสู้ได้ปฏิเสธการต่อสู้ หรือไม่ตอบรับในเวลาที่กำหนด');
+		waitForBattle = false;
+		requestBattle = false;
+	} 
 }
 function refreshGame(){
-	action('refreshGame',{character:{position:me.updatePosition}},function(response){
+	if (MAP.path[me.updatePosition]){
+		refreshData.character = new Object(); 
+		refreshData.character.position = me.updatePosition;
+	}
+	if (refreshTimer) clearTimeout(refreshTimer);
+	if (refreshXHR) refreshXHR.abort();
+	if (refreshData.battle) if (refreshData.battle.request) if (refreshData.battle.request.character_id) waitForBattle = true;
+	refreshXHR = action('refreshGame',(refreshData)? refreshData : null,function(response){
 		handle(response);
-		if (enableRefresh) setTimeout(refreshGame,1500);
+		if (enableRefresh) {
+			refreshTimer = window.setTimeout(refreshGame,1500);
+		}
 	});
+	refreshData = new Object();
 }
 function pauseGame(){
 	enableRefresh = false;
+	if (refreshTimer) clearTimeout(refreshTimer);
+	if (refreshXHR) refreshXHR.abort();
 	console.log('Game was stopped');
 }
 function resumeGame(){
@@ -155,17 +200,72 @@ function gotMe(response){
 }
 
 function gotPage(response){
-	$.fancybox.open({
-        type:'iframe',
-		iframe:{
-			preload : false
-		},
-		href:'pages/'+response.page.url,
-		title:response.page.title,
-		beforeShow : load.close
-	});
+	openPage(response.page);
 }
 
+function gotNotice(notice){
+	//pauseGame(); // Pause game while start battle.
+	//openPage(response.battle);
+	
+	if (notice.battle.start){
+		battle = new Battle();
+		battle.initBattle();
+	} else {
+		if (!waitForBattle){
+			if (notice.battle.response){
+				waitForBattle = true;
+				if (!requestBattle){
+					apprise('<span class="playerColor">'+notice.battle.name+'</span> ได้ส่งคำท้าประลองมาให้คุณ',{'verify':true, 'textYes':'ด้วยความยินดี', 'textNo':'ฝากไว้ก่อนเถอะ!!'},function(response){
+						refreshData.battle = new Object();
+						refreshData.battle.response = response;
+						if (!response){
+							load.update('บุญคุณต้องทดแทน 10 ปีล้างแค้นยังไม่สาย</br> ฮึ่ม... ฝากไว้ก่อนเถอะ');
+							waitForBattle = false;
+						} else {
+							load.show();
+						}
+						requestBattle = false;
+					})
+					requestBattle = true;
+				}
+			} else if (notice.battle.request){
+				waitForBattle = true;
+				load.show();
+			} else if (notice.battle.start) {
+				battle = new Battle();
+				battle.initBattle();
+			}
+		} 
+	} 
+	
+	
+		/*if (notice.battle.response == '0'){
+			 load.update('คู่ต่อสู้ได้ปฏิเสธการต่อสู้');
+		} else if (notice.battle.response == '2' && waitForBattle){
+			battle = new Battle();
+			battle.initBattle();
+		}else if (notice.battle.request && !waitForBattle) {
+			if (!requestBattle){
+				apprise('<span class="playerColor">'+notice.battle.request.character_name+'</span> ได้ส่งคำท้าประลองมาให้คุณ',{'verify':true, 'textYes':'ด้วยความยินดี', 'textNo':'ฝากไว้ก่อนเถอะ!!'},function(response){
+					refreshData.battle = new Object();
+					refreshData.battle.response = response;
+					if (!response){
+						load.update('บุญคุณต้องทดแทน 10 ปีล้างแค้นยังไม่สาย</br> ฮึ่ม... ฝากไว้ก่อนเถอะ');
+					} else {
+						load.show();
+						waitForBattle = true;
+					}
+					requestBattle = false;
+				})
+				requestBattle = true;
+			}
+		} else {
+			console.log('start battle');
+		}*/
+	
+	
+	//resumeGame(); // Resume game when battle finished.
+}
 
 // End Handle function.
 

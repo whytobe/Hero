@@ -40,14 +40,12 @@
 						$result -> returnData();
 						break;
 					default :
-						$result -> set[error] = 'Unknown Event Type.';
-						$result -> set[message] = 'Unable to execute unknown event type.';
+						$result -> set[error][code] = 3002;
 						$result -> returnError();
 						break;
 				}
 			} else {
-				$result -> set[error] = 'Unknown Event.';
-				$result -> set[message] = 'Unable to execute unknown event.';
+				$result -> set[error][code] = 3001;
 				$result -> returnError();
 			}
 		}

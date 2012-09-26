@@ -19,6 +19,11 @@
 				
 				$login = new User($char);
 				$login->login();
+			} else {
+				sleep(2);
+				$result = new Result();
+				$result->set[error][code] =  1003;
+				$result->returnError();
 			}
 			$reader->free();
 		}

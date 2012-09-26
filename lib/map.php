@@ -9,8 +9,7 @@
 			$result->set[map] = $db;
 			$result->returnData();
 		} else {
-			$result -> set[error] = 'Unknown Map.';
-			$result -> set[message] = 'Unable to get map data.';
+			$result -> set[error][code] = 5001;
 			$result -> returnError();
 		}
 		$reader->free();

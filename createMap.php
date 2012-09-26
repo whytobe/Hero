@@ -22,6 +22,7 @@
 			border:1px solid rgba(255,255,255,0.4);
 			text-shadow:1px 1px 1px #000;
 			color:#fff;
+			font-size:9px;
 		}
 		#pathCanvas .block.X{
 			background-color:rgba(255,0,0,0.2);
@@ -32,6 +33,7 @@
 		#pathCanvas .block.E{
 			background-color:rgba(0,0,255,0.2);
 		}
+		
 		/*#pathCanvas .block:hover{
 			background:url('img/move.png') center center no-repeat transparent;
 		}*/
@@ -144,12 +146,13 @@
 							//console.log('click @'+($(this).attr('path')));
 							//path[$(this).attr('path'))] = ;
 							path[$(this).attr('path')] = (parseInt(path[$(this).attr('path')])+1)%3;
-							$(this).html(mapSense[path[$(this).attr('path')]]);
+							//$(this).html(mapSense[path[$(this).attr('path')]]+'<div class="map_num">'+$(this).attr('path')+'</div>');
+							//$(this).html(mapSense[path[$(this).attr('path')]]+'<div class="map_num">'+$(this).attr('path')+'</div>');
 							$(this).attr('class','block '+mapSense[path[$(this).attr('path')]]);
 						});
 
-					
-					block.html(mapSense[path[i]]);
+					//block.html(mapSense[path[i]]+'<div class="map_num">'+i+'</div>');
+					block.html(i);
 					$('#pathCanvas').append(block);
 				}
 			}

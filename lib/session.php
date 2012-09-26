@@ -1,11 +1,15 @@
 <?
 	require_once 'config.php';
+	require_once 'map.php';
+	require_once 'event.php';
+	require_once 'member.php';
+	require_once 'battle.php';
 	require_once 'character.php';
+
 	session_start();
 	header('Content-type: application/json');
 	header('charset=utf-8');
-	print_r($_SESSION[USER]);
+	print_r($_SESSION);
+	//unset($_SESSION[battle]);
 	
-	$event = json_decode('{"map_id":"fild01","position":245});
-	print_r($event);
 ?>

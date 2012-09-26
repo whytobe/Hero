@@ -18,6 +18,17 @@
 	
 	class Result{
 		var $set;
+		function error($resultError,$resultMessage){
+			$this->set[error][code] = 1;
+			$this->set[error][title]= $resultError;
+			$this->set[error][description] = $resultMessage;
+			$this->returnError();	
+		}
+		
+		function errorCode($errorCode){
+			$this->set[error][code] = $errorCode;
+			$this->returnError();
+		}
 		
 		function Result(){
 			//if ($GLOBALS[result]) $this->set = $GLOBALS[result];
@@ -79,8 +90,9 @@
 		
 		function error(){
 			$result = new Result();
-			$result->set[error] = 'MySQL error code :'.mysql_errno();
-	        $result->set[message] = mysql_error();
+			$result->set[error][code] = 1;
+			$result->set[error][title] = 'MySQL error code :'.mysql_errno();
+	        $result->set[error][description] = mysql_error();
 			$result->returnError();
 		}
 	}
