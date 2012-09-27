@@ -108,6 +108,7 @@
 					$result->set[result][$this->round][type] = 'hit';
 				} else {
 					$result->set[result][$this->round][dmg] = 'miss';
+					$result->set[result][$this->round][type] = 'miss';
 				}	
 				$result->set[result][$this->round][id] = $this->myUser('character_id');		
 				$result->set[result][$this->round][name] = $this->mySkill[$skill_id][skill_name];
@@ -169,6 +170,7 @@
 				$this->save();
 				$result = new Result();
 				$result->set[notice][battle][start] = true;
+				$result->set[notice][battle][enemy] = $this->enemy;
 				$result->returnData();
 		}
 

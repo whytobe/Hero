@@ -42,11 +42,13 @@
 		function initialCharacter(){
 			$data = new Reader();
 			$data->commandText = 'select * from characters where character_id = '.$this->character[character_id];
-			$character = $data->read();
+			$this->character = $data->read();
+			$data->free();	
+			/*$character = $data->read();
 			foreach ($character as $key => $value){
 				if ($value)	$this->character[$key] = $value;
 			}
-			$data->free();		
+			$data->free();	*/	
 			//print_r($this->character);
 		}
 		
@@ -84,6 +86,13 @@
 			//print_r($this->character);
 			
 		}
+		function refreshUserBar(){
+			$this->initialCharacter();
+			$result = new Result();
+			$result->set[user_bar][character] = $this->character;
+			$result->returnData();
+		}
+		
 				
 		function getCharacters(){
 			$reader = new Reader();

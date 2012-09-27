@@ -1,0 +1,76 @@
+.userbarbg{
+    position:relative;
+    left:-50px;
+    margin-top:-50px;
+}
+#user_bar{
+    background:url('../img/user_bar_bg.png') transparent center no-repeat;
+    overflow:show;
+    width:630px;
+    height:50px;
+    position:fixed;
+    margin-left:-315px;
+    left:50%;
+    bottom:0px;
+    cursor:pointer;;
+}
+#user_table{
+    margin:5px 10px 0px;
+    /*border:1px #b59e73 solid;*/
+    height:40px;
+    width:610px;
+    color:#712B09;
+    line-height:15px;
+    
+}
+
+.icon_bar > a {
+	top:5px;position:relative;
+}
+#pulse, #soul, .pulse, .soul, .exp{
+    display:inline-block;
+    height:5px;
+    width:100px;
+    margin-top:0px;
+    margin-bottom:0px;
+}
+.margin-2{
+    margin-top:3px;
+    margin-bottom:-3px;
+}
+.pulse{
+    border:1px #9B0E0E solid;
+}
+.soul{
+    border:1px #0E16A4 solid;
+}
+.exp{
+	border:1px #300 solid;
+}
+#pulse{
+    border:1px #9B0E0E solid;
+}
+#soul{
+    border:1px #0E16A4 solid;
+}
+#exp{
+
+    height:2px;
+    width:600px;
+    margin-left:-300px;
+    position:absolute;
+    left:50%;
+    top:8px;
+}
+.userbaricon{
+    opacity: 0.3;
+    -moz-opacity: 0.3;
+    -Khtml-opacity: 0.3;
+    filter:alpha(opacity=30);
+}
+.userbaricon:hover{
+    opacity: 1;
+    -moz-opacity: 1;
+    -Khtml-opacity: 1;
+    filter:alpha(opacity=100);
+}

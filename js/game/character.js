@@ -58,6 +58,8 @@ function Character(character_model,isMe){
 						refreshData.battle.request.character_id = $(el).attr('character_id');
 						//action(request,{battle:{character_id:}},handle); 
 					});
+	} else {
+		refreshUserBar(this.character_model);
 	}
 	this.refreshContextMenu = function(){
 		if (typeof this.contextMenu !== 'undefined') this.contextMenu.find('.active a').html(this.character_model.character_active);

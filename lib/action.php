@@ -68,6 +68,7 @@ function initGame($data){
 	
 }
 
+
 function gotEvent($data){
 	$myUser = $_SESSION[USER];
 	if ($data[position]) {
@@ -91,6 +92,9 @@ function refreshGame($data){
 	} else if (isset($data[battle][request][character_id])){
 		$battle->request($data[battle][request][character_id]);
 	}
+	
+	if (isset($data[refreshUserBar])) $myUser->refreshUserBar();
+	
 	$battle->checkRequest();
 		
 	$myUser->getCharacters();

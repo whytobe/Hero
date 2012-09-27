@@ -5,6 +5,43 @@
 *
 **/
 var load = new LoadInfo();
+var pulse_color = "FF0000" ;
+var soul_color = "486DE7";
+var exp_color = "000000";
+function Indicator(type,now,max){
+	indColor = 0;
+	indHead = "";
+	switch(type){
+		case "pulse":
+			indColor = pulse_color;
+			indHead = "ชีพจร";
+			break;
+		case "soul":
+			indColor = soul_color;
+			indHead = "ลมปราณ";
+			break;
+		case "exp":
+			indColor = exp_color;
+			indHead = "ค่าประสบการณ์";
+			break;
+	}
+	$('#'+type).html("<div style='width:"+(now/max*100)+"%;height:100%;background-color:#"+indColor+"' title='"+indHead+" : "+now+"/"+max+" ("+(now/max*100).toFixed(0)+"%)'></div>");
+}
+function Label(data,val){
+	$('#'+data).html(val);       
+}
+function preLoad(obj){
+	loader = $("<div id='preload'><div class='centerscreen'><img src='img/preload.gif' /><br /> กรุณารอสักครู่....</div></div>").hide().fadeIn();
+	if (obj == "all"){
+		$(".gameBG").append(loader);
+	} else {
+		$("#"+obj).append(loader);	
+	}
+}
+
+function unLoad(){
+	$("#preload").fadeOut(function(){$(this).remove();});
+}
 
 function LoadInfo(){
 	this.show = function(){
@@ -23,15 +60,15 @@ function LoadInfo(){
 		appriseClose();
 	}
  }
- function loadPage(page){
+ function loadPage(page,callback){
  	$.fancybox.open({
         type:'ajax',
         modal:true,
 		href:'pages/'+page.url,
 		title:page.title,
 		autoSize:true,
-		beforeShow : load.close
-		
+		beforeShow : load.close,
+		afterShow : callback		
 	});
  }
  function openPage(page){

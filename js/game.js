@@ -9,10 +9,10 @@ var me = null;
 var refreshData = new Object();
 var waitForBattle = false;
 var battle = null;
-$.getScript("js/vendor/jquery-ui-1.8.23.custom.min.js",loadPinesScript,enableCache);
-function loadPinesScript(){
+//$.getScript("js/vendor/jquery-ui-1.8.23.custom.min.js",loadPinesScript,enableCache);
+//function loadPinesScript(){
 	$.getScript("js/pines/jquery.pnotify.min.js",loadErrorScript,enableCache);
-}
+//}
 function loadErrorScript(){
 	$.pnotify.defaults.styling = "jqueryui";
 	$.pnotify.defaults.history = false;
@@ -92,13 +92,29 @@ function handle(response){
 	if (response.me) gotMe(response); // Handle event when got me.
 	if (response.page) gotPage(response); // Handle event when got page event.
 	if (response.notice) gotNotice(response.notice); // Handle event when receive request battle.
-	
+	if (response.user_bar) refreshUserBar(response.user_bar.character);
 	if (waitForBattle && !response.notice){
 		load.update('คู่ต่อสู้ได้ปฏิเสธการต่อสู้ หรือไม่ตอบรับในเวลาที่กำหนด');
 		waitForBattle = false;
 		requestBattle = false;
 	} 
 }
+function loadUserBar(){
+	preLoad('user_bar');
+	refreshData.refreshUserBar = true;
+}
+
+function refreshUserBar(response){
+	unLoad();
+	Indicator('pulse',response.pulse,response.maxpulse);
+	Indicator('soul',response.soul,response.maxsoul);
+	Indicator('exp',response.exp,response.maxexp);
+	Label('character_name',response.character_name);
+	Label('character_lv',response.character_lv);
+	Label('character_fame',response.character_fame);
+	Label('character_money',response.character_money);
+}
+
 function refreshGame(){
 	if (MAP.path[me.updatePosition]){
 		refreshData.character = new Object(); 
@@ -210,6 +226,7 @@ function gotNotice(notice){
 	if (notice.battle.start){
 		battle = new Battle();
 		battle.initBattle();
+		if (notice.battle.enemy) battle.enemy = notice.battle.enemy;
 	} else {
 		if (!waitForBattle){
 			if (notice.battle.response){
@@ -234,6 +251,7 @@ function gotNotice(notice){
 			} else if (notice.battle.start) {
 				battle = new Battle();
 				battle.initBattle();
+				if (notice.battle.enemy) battle.enemy = notice.battle.enemy;
 			}
 		} 
 	} 
@@ -268,5 +286,7 @@ function gotNotice(notice){
 }
 
 // End Handle function.
+
+
 
 

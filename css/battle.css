@@ -1,0 +1,29 @@
+.battleRound{
+	width:80%;
+}
+
+.battleRound .roundTitle {
+	text-align:center;
+	font-weight:bold;
+	color:#A57B43;
+}
+
+.battleRound .roundDetail.mine{
+	text-align:left;
+}
+
+.battleRound .roundDetail.enemy{
+	text-align:right;
+}
+
+.battleRound .roundDetail.mine.hit{
+	color:#4C3ADE;
+}
+
+.battleRound .roundDetail.enemy.hit{
+	color:#f00;
+}
+
+.battleRound .roundDetail.miss{
+	color:#bbb;
+}
