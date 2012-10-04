@@ -8,6 +8,23 @@ var load = new LoadInfo();
 var pulse_color = "FF0000" ;
 var soul_color = "486DE7";
 var exp_color = "000000";
+var itemColor = ['#CCCCBB','#33CCBB','#008844'];
+var pageHTML = {
+	//<div id="preload"><div class="centerscreen"><img src="img/preload.gif" />
+	'item' : '<div class="divbox"><div style="display:block;float:left;width:40%;"><br/><center><table cellpadding=0 cellspacing=0 border=0><tr height="30px"><td colspan=2 id="item-name"></td></tr><tr height="50px"><td id="item-img"class="midcen"></td><td id="item-mgr"class="midcen"colspan=2>จัดการไอเท็ม</td></td><tr height="120px"><td id="item-info"colspan=3>Item info</td></tr><tr><td id="gloves"class="equip-slot midcen"></td><td id="head"class="equip-slot midcen"></td><td id="garment"class="equip-slot midcen"></td></tr><tr><td id="righthand"class="equip-slot midcen"></td><td id="body"class="equip-slot midcen"></td><td id="lefthand"class="equip-slot midcen"></td></tr><tr><td id="acc1"class="equip-slot midcen"></td><td id="foots"class="equip-slot midcen"></td><td id="acc2"class="equip-slot midcen"></td></tr></table></center></div><div style="display:block;float:right;width:60%;"><br/><table cellpadding=0 cellspacing=0 border=0 width="100%"><tr><td class="item-list-head midcen use"style="background:#3cb;">ใช้งาน<td></tr><tr><td id="useItem"class="item-list use"colspan=3></td></tr><tr height="5px"></tr><tr><td class="item-list-head midcen equip"style="background:#084;">สวมใส่<td></tr><tr><td id="equipItem"class="item-list equip"colspan=3></td></tr><tr height="5px"></tr><tr><td class="item-list-head midcen unuse"style="background:#ccb;">ทั่วไป<td></tr><tr><td id="unuseItem"class="item-list unuse"colspan=3></td></tr></table></div><br style="clear:both"/></div>'
+	,'status' : '<div class="divbox" id="stat_info"><div style="display:block;float:left;width:40%;"><br/><center><table cellpadding=0 cellspacing=0 border=0 width="100%"><tr height="50px"><td id="item-img"class="midcen">รูปผู้เล่น<br/>50 x 50px</td><td id="item-mgr"class="midcen"colspan=2></td></td><tr height="120px"><td id="item-info"colspan=3>อาชีพ:-<br/>ระดับ:<span class="character_lv"></span><br/>ชื่อเสียง:<span class="character_fame"></span><br/>เมือง:<span class="map_id"></span><br/>สถานะ:<span class="character_active"></span><br/>เริ่มท่องยุทธภพเมื่อ:<span class="created_date"></span><br/></td></tr><tr></table></center></div><div style="display:block;float:right;width:60%;"><table class="small"width="100%"style="text-align:center"><thead><tr height="50px"><th colspan=6 class="middle">ข้อมูลตัวละคร</th></tr></thead><tbody><tr class="height30 "><td width="10%">ชีพจร</td><td width="40%"colspan=2 style="padding:10px"><span class="pulse long"><div class="pulse_indicator indicator"></div></span></td><td width="10%">ลมปราณ</td><td width="40%"colspan=2 style="padding:10px"><span class="soul long"><div class="soul_indicator indicator"></div></span></td></tr><tr class="height30"><td>ประสบการณ์</td><td colspan=5 style="padding:10px"><span class="exp long"><div class="exp_indicator indicator"></div></span></td></tr><tr class="height30 middle"><td colspan=6><br/><hr/></td></tr><tr class="height60"><td class="str-table width1-6">แข็งแรง<br/><span class="character_str"></span><span class="addStat point"status="str">+</span></td><td class="agi-table width1-6">ว่องไว<br/><span class="character_agi"></span><span class="addStat point"status="agi">+</span></td><td class="vit-table width1-6">แข็งแกร่ง<br/><span class="character_vit"></span><span class="addStat point"status="vit">+</span></td><td class="dex-table width1-6">ชำนาญ<br/><span class="character_dex"></span><span class="addStat point"status="dex">+</span></td><td class="int-table width1-6">ฉลาด<br/><span class="character_int"></span><span class="addStat point"status="int">+</span></td><td class="luk-table width1-6">โชคชะตา<br/><span class="character_luk"></span><span class="addStat point"status="luk">+</span></td></tr><tr class="height30 middle"><td colspan=6><br/><hr/></td></tr><tr class="height20"align="left"><td colspan=2>พลังโจมตี</td><td class="character_atk"></td><td colspan=2>หน่วงเวลาโจมตี(วินาที)</td><td class="character_atk_delay"></td></tr><tr class="height20"align="left"><td colspan=2>กำลังภายใน</td><td class="character_matk"></td><td colspan=2>หน่วงเวลาผนึกปราณ(วินาที)</td><td class="character_matk_delay"></td></tr><tr class="height20"align="left"><td colspan=2>พลังป้องกัน</td><td class="character_def"></td><td colspan=2>อัตราการหลบหลีก</td><td class="character_flee"></td></tr><tr class="height20"align="left"><td colspan=2>ความแม่นยำ</td><td class="character_hit"></td><td colspan=2>ดวง[+-25%]</td><td class="character_lucky"></td></tr><tr class="height20"align="left"><td colspan=2>Drop rate(%)</td><td class="character_drop_rate">+%</td><td colspan=2>Status point คงเหลือ</td><td class="character_status_point"></td></tr></tbody></table></div><br style="clear:both"/></div>'
+	,'battle' : '<div class="divbox"><div>การต่อสู้ระหว่าง<span id="myCharacter"></span>กับ....<span id="enemy"></span></div><button id="attack_button"onclick="battle.attack(0)">attack</button><div id="battleResult"class="scrolling"style="height:400px;"></div></div>'
+}
+$('.hideButton').click(toggleUserBar);
+function toggleUserBar(){
+	if ($('#user_bar').css('bottom') == '0px'){
+		$('#user_bar').animate({'bottom':'-50px'},function() {$('.hideButton').html('<span class="ui-icon ui-icon-triangle-1-n"></span>');});
+		$('.hideButton').animate({'margin-top':'-15px'});
+	} else {
+		$('#user_bar').animate({'bottom':'0px'},function() {$('.hideButton').html('<span class="ui-icon ui-icon-triangle-1-s"></span>1');});
+		$('.hideButton').animate({'margin-top':'35px'});
+	}
+}
 function Indicator(type,now,max){
 	indColor = 0;
 	indHead = "";
@@ -25,22 +42,29 @@ function Indicator(type,now,max){
 			indHead = "ค่าประสบการณ์";
 			break;
 	}
-	$('#'+type).html("<div style='width:"+(now/max*100)+"%;height:100%;background-color:#"+indColor+"' title='"+indHead+" : "+now+"/"+max+" ("+(now/max*100).toFixed(0)+"%)'></div>");
+	$('.'+type+'_indicator').animate({'width':(now/max*100)+'%'},'slow').attr('title',indHead+" : "+now+"/"+max+" ("+(now/max*100).toFixed(0)+"%)");
+	//$('.'+type+'_indicators').animate({'width':(now/max*100)+'%'},'slow').attr('title',indHead+" : "+now+"/"+max+" ("+(now/max*100).toFixed(0)+"%)");
+	//$('#'+type).html("<div style='width:"++"%;height:100%;background-color:#"+indColor+"' title='"+indHead+" : "+now+"/"+max+" ("+(now/max*100).toFixed(0)+"%)'></div>");
 }
 function Label(data,val){
-	$('#'+data).html(val);       
+	$(data).html(val);       
 }
 function preLoad(obj){
 	loader = $("<div id='preload'><div class='centerscreen'><img src='img/preload.gif' /><br /> กรุณารอสักครู่....</div></div>").hide().fadeIn();
 	if (obj == "all"){
 		$(".gameBG").append(loader);
 	} else {
-		$("#"+obj).append(loader);	
+		$(obj).append(loader);	
 	}
 }
 
 function unLoad(){
 	$("#preload").fadeOut(function(){$(this).remove();});
+}
+
+function msgBox(text,cb){
+	$('.appriseOverlay,.appriseOuter').remove();
+	apprise('<div class="noteTitle">'+text.title+'</div><div class="noteDescription">'+text.description+'</div>',(typeof cb !== 'undefined')? cb : null);
 }
 
 function LoadInfo(){
@@ -60,15 +84,17 @@ function LoadInfo(){
 		appriseClose();
 	}
  }
- function loadPage(page,callback){
+ function loadPage(page,callback,isModal){
+ 	isModal = (typeof isModal === 'undefined')? false : isModal;
  	$.fancybox.open({
         type:'ajax',
-        modal:true,
+        modal:isModal,
 		href:'pages/'+page.url,
 		title:page.title,
+		scrolling:'no',
 		autoSize:true,
 		beforeShow : load.close,
-		afterShow : callback		
+		afterShow : callback
 	});
  }
  function openPage(page){
@@ -251,11 +277,41 @@ function SHA1 (msg) {
  
 }
 
+function checkError(response){
+	if (response.error){
+		if (response.error.code =='1001' || response.error.code =='1002' || response.error.code =='1003')
+		console.log(response.error );
+		load.update('เกิดข้อผิดพลาด! กรุณาลองใหม่อีกครั้ง<br/>'+ errorMsg[response.error.code].title  +', '+errorMsg[response.error.code].description);
+		unLoad();
+		return false;
+	} else {
+		return response;
+	}
+}
+
 function action(inputAction,inputData,callback){
 	return $.post('lib/action.php',{action:inputAction,data:inputData},function(response){
 		if (response.error){
+			if (response.error.code == 1001 || response.error.code == 1002 || response.error.code == 1003) {
+				$('.appriseOverlay,.appriseOuter').remove();
+				apprise('เกิดข้อผิดพลาด! กรุณาลองใหม่อีกครั้ง<br/>'+ errorMsg[response.error.code].title  +', '+errorMsg[response.error.code].description,{'verify':true}, function(r) {
+					if (r) {
+						var index = location.href.lastIndexOf("/") + 1;
+						var filename = location.href.substr(index);
+						if (filename != 'index.html')location.href = 'index.html';
+						else {
+							$('#member_password').html('').select().focus();							
+						}
+ 
+					}else{
+						window.close();
+					}
+				});
+			} else {
+				load.update('เกิดข้อผิดพลาด! กรุณาลองใหม่อีกครั้ง<br/>'+ errorMsg[response.error.code].title  +', '+errorMsg[response.error.code].description);
+			}
 			console.log(response.error );
-			load.update('เกิดข้อผิดพลาด! กรุณาลองใหม่อีกครั้ง<br/>'+ errorMsg[response.error.code].title  +', '+errorMsg[response.error.code].description);
+			unLoad();
 		} else {
 			callback(response);
 		}

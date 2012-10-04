@@ -11,5 +11,6 @@
 	header('charset=utf-8');
 	print_r($_SESSION);
 	//unset($_SESSION[battle]);
-	
+	//echo microtime(true);
+	//echo substr('test', 0,-1)
 ?>

@@ -1,6 +1,7 @@
 <?php
 require_once 'config.php';
 require_once 'map.php';
+require_once 'item.php';
 require_once 'event.php';
 require_once 'member.php';
 require_once 'battle.php';
@@ -60,12 +61,10 @@ if ($_POST[action] == 'memberLogin'){
 }
 
 function initGame($data){
-	
 	$myUser = $_SESSION[USER];
 	$myUser->initialCharacter();
 	$myUser->getCharInfo();
 	getMapInfo();
-	
 }
 
 
@@ -77,6 +76,16 @@ function gotEvent($data){
 	$event = new Event();
 	$event->gotEvent();
 	$event->executeEvent();	
+}
+function menu($data){
+	switch($data[menuType]){
+		case 'item' :
+			getItem();
+			break;
+		case 'status' :
+			myUser(null)->getStatusInfo();
+			break;
+	}
 }
 
 function refreshGame($data){
@@ -94,6 +103,20 @@ function refreshGame($data){
 	}
 	
 	if (isset($data[refreshUserBar])) $myUser->refreshUserBar();
+	/*if (isset($data[getStatus])) $myUser->getStatusInfo();
+	
+	/* Item function 
+	if (isset($data[item])){
+		if (isset($data[item][character_item_id])){
+			$item = new Item($data[item][character_item_id]);
+			$item->detail();
+		}
+	}
+	
+	if (isset($data[status])){
+		if (isset($data[status][addPoint])) 
+	
+	}*/	
 	
 	$battle->checkRequest();
 		

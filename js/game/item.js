@@ -1,0 +1,111 @@
+function clearItem(){
+	$('#unuseItem,#useItem,#equipItem').html('');
+}
+var itemZone = ["unuseItem","useItem","equipItem"];
+var itemPosition = ["gloves","head","garment","righthand","body","lefthand","acc1","foots","acc2"];
+function showItem(items){
+	unLoad();
+	clearItem();
+	clearDetail();
+	$.each(items, function(index, item) {
+		if (item.item_active == "0"){
+			itemImg = $('<img class="item-icon" />').attr('src','img/item/'+item.item_id+'.png').attr('title',item.item_name+' - '+item.item_count+' ชิ้น');
+			itemCount = $('<div class="item-num"/>').html(item.item_count);
+			itemHtml = $('<div class="item-icon" />').attr('id',item.character_item_id);
+			itemHtml.append(itemImg).append(itemCount).appendTo('#'+itemZone[item.item_type]);
+		} else if (item.item_active == "1"){
+			itemImg = $('<img class="item-equip"/>').attr('src','img/item/'+item.item_id+'.png').attr('title',item.item_name).attr('id',item.character_item_id);
+			itemImg.appendTo('#'+itemPosition[item.item_position-1]);
+		}
+		//console.log(JSON.stringify(item));
+
+		
+		//console.log(itemZone);
+		//$('#'+itemZone).append(itemHtml);
+	});
+	clicks = 0;
+	 $("#equipItem div.item-icon,#useItem div.item-icon").unbind('click').bind("click", function(e){
+		item = $(this);
+        clicks++;  //count clicks
+
+        if(clicks === 1) {
+            timer = setTimeout(function() {
+            	clicks = 0;             //after action performed, reset counter
+            	
+                getDetail($(item).attr('id'));          
+            }, 250);
+
+        } else {
+            clearTimeout(timer);    //prevent single-click action
+            clicks = 0;             //after action performed, reset counter
+            manageItem('use',$(item).attr('id'))
+           	//alert('use ' + $(item).attr('id'));
+           	//useItem(id);
+           	
+		}
+    });
+
+	$('#unuseItem div.item-icon').unbind('click').bind('click',function(){
+		getDetail($(this).attr('id'))
+	});
+	
+	$('td.equip-slot').unbind('click').bind("click", function(e){
+		item = $(this);
+        clicks++;  //count clicks
+
+        if(clicks === 1) {
+            timer = setTimeout(function() {
+            	clicks = 0;             //after action performed, reset counter
+            	
+                if ($(item).children().length>0) getDetail($(item).children().attr('id'));       
+            }, 250);
+
+        } else {
+            clearTimeout(timer);    //prevent single-click action
+            clicks = 0;             //after action performed, reset counter
+            manageItem('use',$(item).children().attr('id'))
+           	//alert('use ' + $(item).attr('id'));
+           	//useItem(id);
+           	
+		}
+    });
+	
+	
+
+}
+
+function getDetail(id){
+	preLoad('.fancybox-wrap');
+	action('getItemDetail',{character_item_id:id},handle);
+	//refreshData.item = new Object();
+	//refreshData.item.character_item_id = id;
+}
+
+function manageItem(type,id){
+	preLoad('.fancybox-wrap');
+	console.log(type + " : " + id);
+	action('item',{manage:type,character_item_id:id},handle);
+}
+
+function clearDetail(){
+	$('#item-img').css({'background':"none",'box-shadow':'none'});
+	$('#item-info').html('รายละเอียดไอเท็ม');
+	$('#item-name').html('ชื่อไอเท็ม');
+	$('#item-mgr').html('-');
+	$('.equip-slot').html('');
+}
+
+function itemDetail(data){
+	unLoad();
+	$('#item-img').css({
+									'background':"url('img/item/"+data.item_id+".png') center no-repeat",
+									'box-shadow':'0 0 20px '+itemColor[data.item_type]+' inset'
+								});
+	$('#item-info').html('<b>จำนวน</b> : '+data.item_count+' ชิ้น<br/><b>ราคา</b> : '+(data.item_price/2)+' ยุน<br/><b>รายละเอียด</b> :<br/>'+data.item_description);
+	$('#item-name').html(data.item_name);
+	if (data.item_type != 0) $('#item-mgr').html('<div class="manage use" manage="use">ใช้งาน/สวมใส่/ถอด</div><div class="manage drop" manage="drop">โยนทิ้ง</div>').attr('uid',data.character_item_id);
+	$('#item-mgr .manage').unbind('click').bind('click',function(){
+		item = $(this);
+		manageItem(item.attr('manage'),item.parent().attr('uid'));
+	});
+}

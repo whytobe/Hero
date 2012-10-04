@@ -1,0 +1,141 @@
+/*-----------------------------------------------------------------------------*/
+/*------------------------- Start Equipment Style -------------------------*/
+/*-----------------------------------------------------------------------------*/
+		td.use{
+			border-color:#3cb;
+		}
+		
+		td.unuse{
+			border-color:#ccb;
+		}
+	
+		td.equip{
+			border-color:#084;
+		}
+		td.equip-slot{
+			width:80px;
+			height:80px;
+			border:1px solid #ccb;
+		}
+		
+		td#gloves{
+			background:url('../img/item/glove.png') no-repeat center;
+		}
+		td#head{
+			background:url('../img/item/head.png') no-repeat center;
+		}
+		td#garment{
+			background:url('../img/item/garment.png') no-repeat center;
+		}
+		td#righthand{
+			background:url('../img/item/righthand.png') no-repeat center;
+		}
+		td#body{
+			background:url('../img/item/body.png') no-repeat center;
+		}
+		td#lefthand{
+			background:url('../img/item/lefthand.png') no-repeat center;
+		}
+		td#acc1{
+			background:url('../img/item/acc.png') no-repeat center;
+		}
+		td#foots{
+			background:url('../img/item/boot.png') no-repeat center;
+		}
+		td#acc2{
+			background:url('../img/item/acc.png') no-repeat center;
+		}
+		td#item-name{
+			color: #3333FF;
+		    font-size: 17px;
+		    font-weight: bold;
+		}
+		td#item-img{
+			border:1px solid #000;
+			width:80px;
+			height:80px;
+		}
+		td#item-mgr{
+			vertical-align:top;	
+		}
+		td#item-info{
+			font-size:11px;
+			padding-top:5px;
+			line-height:15px;
+			vertical-align:top;
+		}
+		td.midcen{
+			text-align:center;
+			vertical-align:middle;
+		}
+		.item-list-head{
+			color:#fff;
+			font-weight:bold;
+			font-size:+1;
+			width:150px;
+			height:25px;
+			line-height:25px;
+			vertical-align:middle;
+			border:1px solid #ccb;
+			display:block;
+			margin:-1px;
+		}
+		.item-list{
+			border:1px solid #ccb;
+			padding:1px;
+		}
+		.item-icon{
+			width:30px;
+			height:30px;
+			float:left;
+			cursor:pointer;
+		}
+		div.item-icon{
+			border:1px #3bb dotted;
+			margin:1px;
+		}
+		img.item-icon{
+			margin:0px -30px -30px 0px;
+		}
+
+		.item-num{
+			margin:20px 1px -30px 0px;
+			font-size:9px;
+			color:#2F5FC5;
+			text-align:right;
+			float:right;
+			text-shadow: 0 0 2px #06FFFB;
+		}
+		div.manage{
+			display:block;	
+			line-height:25px;
+			font-size:12px;
+			margin:5px 10px;
+			cursor:pointer;
+			border-width: 1px;
+			border-style: solid;
+		    border-radius: 5px 5px 5px 5px;
+		}
+		div.manage.use{
+			background-color: #FFF7D6;
+		    border-color: #FC0;
+		    color: #000000
+		}
+		div.manage.use:hover{
+			background-color:#FC0;
+			color:#000;	
+		}
+		
+		div.manage.drop{
+			background-color:#FF9292;
+			border-color:#f00;
+			color:#000;	
+		}
+		div.manage.drop:hover{
+			background-color:#F00;
+			color:#fff;	
+		}
+		
+/*-----------------------------------------------------------------------------*/
+/*------------------------- End Equipment Style -------------------------*/
+/*-----------------------------------------------------------------------------*/

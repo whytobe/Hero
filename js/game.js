@@ -81,6 +81,9 @@ function loadCharacterScript(){
 	    	handle(response);
 	    	refreshGame();
 	    	$.getScript("js/game/battle.js",null,enableCache);
+	    	$.getScript("js/game/item.js",null,enableCache);
+	    	$.getScript("js/game/skill.js",null,enableCache);
+	    	$.getScript("js/game/status.js",null,enableCache);
 	    });
 	},enableCache);
 }
@@ -93,6 +96,10 @@ function handle(response){
 	if (response.page) gotPage(response); // Handle event when got page event.
 	if (response.notice) gotNotice(response.notice); // Handle event when receive request battle.
 	if (response.user_bar) refreshUserBar(response.user_bar.character);
+	if (response.character_item) showItem(response.character_item); // Show item.
+	if (response.item_detail) itemDetail(response.item_detail); // Show item detail.
+	if (response.status) showStatus(response.status); // Show status detail.
+	
 	if (waitForBattle && !response.notice){
 		load.update('คู่ต่อสู้ได้ปฏิเสธการต่อสู้ หรือไม่ตอบรับในเวลาที่กำหนด');
 		waitForBattle = false;
@@ -100,19 +107,22 @@ function handle(response){
 	} 
 }
 function loadUserBar(){
-	preLoad('user_bar');
+	preLoad('#user_bar');
 	refreshData.refreshUserBar = true;
 }
 
 function refreshUserBar(response){
 	unLoad();
-	Indicator('pulse',response.pulse,response.maxpulse);
-	Indicator('soul',response.soul,response.maxsoul);
-	Indicator('exp',response.exp,response.maxexp);
-	Label('character_name',response.character_name);
-	Label('character_lv',response.character_lv);
-	Label('character_fame',response.character_fame);
-	Label('character_money',response.character_money);
+	Indicator('pulse',response.character_pulse,response.character_max_pulse);
+	Indicator('soul',response.character_soul,response.character_max_soul);
+	Indicator('exp',response.character_exp,response.character_max_exp);
+	$.each(response, function(index,value) {
+		Label('#character_info .'+index,value);  
+	});
+	/*Label('#character_info .character_name',response.character_name);
+	Label('#character_info .character_lv',response.character_lv);
+	Label('#character_info .character_fame',response.character_fame);
+	Label('#character_info .character_money',response.character_money);*/
 }
 
 function refreshGame(){
@@ -139,6 +149,7 @@ function pauseGame(){
 }
 function resumeGame(){
 	enableRefresh = true;
+	loadUserBar();
 	refreshGame();
 	console.log('Game is running');
 }
@@ -219,10 +230,11 @@ function gotPage(response){
 	openPage(response.page);
 }
 
-function gotNotice(notice){
-	//pauseGame(); // Pause game while start battle.
-	//openPage(response.battle);
-	
+function noticeNote(response){
+	if (response) msgBox(response);
+}
+
+function noticeBattle(notice){
 	if (notice.battle.start){
 		battle = new Battle();
 		battle.initBattle();
@@ -255,37 +267,46 @@ function gotNotice(notice){
 			}
 		} 
 	} 
-	
-	
-		/*if (notice.battle.response == '0'){
-			 load.update('คู่ต่อสู้ได้ปฏิเสธการต่อสู้');
-		} else if (notice.battle.response == '2' && waitForBattle){
-			battle = new Battle();
-			battle.initBattle();
-		}else if (notice.battle.request && !waitForBattle) {
-			if (!requestBattle){
-				apprise('<span class="playerColor">'+notice.battle.request.character_name+'</span> ได้ส่งคำท้าประลองมาให้คุณ',{'verify':true, 'textYes':'ด้วยความยินดี', 'textNo':'ฝากไว้ก่อนเถอะ!!'},function(response){
-					refreshData.battle = new Object();
-					refreshData.battle.response = response;
-					if (!response){
-						load.update('บุญคุณต้องทดแทน 10 ปีล้างแค้นยังไม่สาย</br> ฮึ่ม... ฝากไว้ก่อนเถอะ');
-					} else {
-						load.show();
-						waitForBattle = true;
-					}
-					requestBattle = false;
-				})
-				requestBattle = true;
-			}
-		} else {
-			console.log('start battle');
-		}*/
-	
-	
-	//resumeGame(); // Resume game when battle finished.
+}
+
+function gotNotice(notice){
+	if (notice.battle) noticeBattle(notice);
+	if (notice.note) noticeNote(notice.note);
 }
 
 // End Handle function.
+
+function menu(type){
+	page = new Object();
+	page.type = type;
+	switch(type){
+		case 'item' :
+			page.title  = 'Character Items';
+			break;
+		case 'status' :
+			//page.url = 'status.php';
+			//loadPage(page,null);
+			//refreshData.getStatus = true; 
+			page.title = 'Character Status';
+	}
+ 	$.fancybox.open({
+        type:'html'
+        ,modal:false
+        ,content:pageHTML[page.type]
+		,title:page.title
+		,autoSize:true
+		,afterLoad : function(){
+				action('menu',{menuType:type},handle);
+				preLoad(".fancybox-wrap");
+		}
+		,beforeShow : function(){
+			load.close();
+			pauseGame();
+		}
+		,beforeClose : resumeGame
+	});
+	
+}
 
 
 

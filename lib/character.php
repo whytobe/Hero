@@ -6,7 +6,9 @@
 	 * USER_UNIQUE
 	 * USER_PASSWORD **
 	 */	
-	
+	function addPoint($data){
+		myUser(null)->addPoint($data[addPoint]);
+	}
 	
 	class User{
 		var $character = Array();
@@ -18,31 +20,96 @@
 			//$this->character = $inputCharacter;
 			//	
 		}
-		
+	
+	function getStatusInfo(){
+		$this->initialCharacter();
+		$result = new Result();
+		$result->set[status] = $this->character;
+		$result->returnData();	
+	}
+	
 	function getCharInfo(){
-		/*$user =$_SESSION[USER];
-		$reader = new Reader();
-		$reader->commandText = 'select * from characters where character_id = '.$this->character[character_id].' limit 1';
-		$db = $reader->read();
-		if ($reader->hasRow()){
-			$result = new Result();
-			$result->set[me] = $db;
-			$result->returnData();
-		}
-		$reader->free();*/
 		$result = new Result();
 		$result->set[me] = $this->character;
 		$result->returnData();	
+	}
+	
+	function addPoint($point){
+		$result = new Result();
+		$status = array(
+		'str' => 'character_str',
+		'agi' => 'character_agi',
+		'vit' =>'character_vit',
+		'int' =>'character_int',
+		'dex' => 'character_dex',
+		'luk' => 'character_luk');
+		if (!$upstatus = $status[$point]){
+			$result->errorCode(2002);
+		}
+		$useStatPoint = $this->checkEnoughPoint($upstatus);
+		$this->character[$upstatus]++;
+		$this->character[character_status_point] -= $useStatPoint;
+		$this->updateStatus();
+		$this->getStatusInfo();
+	
+	}
+	
+	function updateStatus(){
+		$DEFAULT_ATK_DELAY = 3; // หน่วงเวลาโจมตีพื้นฐาน
+		$DEFAULT_MATK_DELAY = 5; // หน่วงเวลาโจมตีเวทย์พื้นฐาน
+		$this->character[character_max_pulse] = ($this->character[character_lv]*50)+($this->character[character_vit]*35)+(floor($this->character[character_vit]/2)^2);
+		$this->character[character_max_soul] = ($this->character[character_lv]*20)+($this->character[character_int]*14)+(floor($this->character[character_int]/2)^2);
+		$this->character[character_atk] = $this->character[character_str]+(($this->character[character_str]/5)*5)+($this->character[character_lv]*2);
+		$this->character[character_def] = $this->character[character_vit]+(($this->character[character_vit]/5)*7)+($this->character[character_lv]*2);
+		$this->character[character_matk] = $this->character[character_int]+(($this->character[character_int]/5)*15)+($this->character[character_lv]*2);
+		$this->character[character_flee] = $this->character[character_agi]+(($this->character[character_agi]/5)*5)+($this->character[character_lv]*2);
+		$this->character[character_hit] = $this->character[character_dex]+(($this->character[character_dex]/5)*7)+($this->character[character_lv]*2);
+		$this->character[character_drop_rate] = ($this->character[character_luk]+(($this->character[character_luk]/5)*9))/10;
+		$this->character[character_atk_delay] = number_format(($DEFAULT_ATK_DELAY*100/($this->character[character_lv]+100+($this->character[character_agi]*3)+(($this->character[character_agi]/9)^2))), 2, '.', ',');
+		$this->character[character_matk_delay] = number_format(($DEFAULT_MATK_DELAY*100/($this->character[character_lv]+100+($this->character[character_dex]*3)+(($this->character[character_dex]/7)^2))), 2, '.', ',');
+		$this->character[character_lucky] = $this->character[character_luk]/2;
+		$this->getItemAbility();
+		if ($this->character['character_pulse'] > $this->character['character_max_pulse']) $this->character['character_pulse'] = $this->character['character_max_pulse'];
+		if ($this->character['character_soul'] > $this->character['character_max_soul']) $this->character['character_soul'] = $this->character['character_max_soul'];
+		
+		$this->save();
+	}
+
+	function getItemAbility(){
+		$reader = new Reader();
+		$reader->commandText = 'select item_ability from character_item,item where character_item.item_id = item.item_id and character_id = '.$this->character[character_id].' and item_active = 1';
+		while ($db = $reader->read()){
+			$ability = json_decode($db[item_ability]);
+			foreach ($ability as $key => $value) {
+				$this->character['character_'.$key] += $value;
+			}
+		}
+		
+	}
+	
+	function checkEnoughPoint($point){
+		$requirePoint = (ceil($this->character[$point]/10));
+		if ($requirePoint <= $this->character[character_status_point]){
+			return $requirePoint;
+		} else {
+			$result = new Result();
+			$result->errorCode(2001);
+		}
 	}
 	
 	function id(){
 		return $this->character[character_id];
 	}
 	
+	function getMaxExp(){
+		return ((($this->character[character_lv]+1)*2)^3);
+	}
+	
 		function initialCharacter(){
 			$data = new Reader();
 			$data->commandText = 'select * from characters where character_id = '.$this->character[character_id];
 			$this->character = $data->read();
+			$this->character[character_max_exp] = $this->getMaxExp();
 			$data->free();	
 			/*$character = $data->read();
 			foreach ($character as $key => $value){
@@ -68,6 +135,7 @@
 			$data = new Updater();
 			$data->table = 'characters';
 			$data->set = $this->character;
+			if ($data->set[character_max_exp]) unset($data->set[character_max_exp]);
 			$data->where[character_id] = $this->character[character_id];
 			unset($data->set[character_id]);
 			unset($data->set[character_online_unique]);
@@ -113,6 +181,26 @@
 				$this->character[character_last_active] = date('c');
 				$this->character[map_id] = substr($this->character[map_id], 0,6).','.$position;
 				$this->save();
+				if ($this->map[monster_id] != null){
+					$monster = json_decode($this->map[monster_id]);
+					$monster_found = null;
+					foreach ($monster as $key => $value) {
+						$found = rand(0,100);
+						if ($found < $value){
+							$monster_found = $key;						
+						} else {
+							break;	
+						}
+					}
+					if ($monster_found != null) {
+						$inserter = new Inserter();
+						$inserter->table = 'character_battle';
+						$inserter->set[battle_defender_id] = myUser('character_id');
+						$inserter->set[battle_monster_id] = $key;
+						$inserter->set[battle_request] = 2;
+						$inserter->execute();
+					}
+				}
 			}
 		}
 		

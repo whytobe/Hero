@@ -14,9 +14,11 @@ $.getScript("js/jquery.mCustomScrollbar.js",null,true);
 $.getScript("js/jquery.contextMenu.js",null,true);
 $.getScript("js/fancybox/jquery.fancybox.js?v=2.1.0",null,true);
 $.getScript("js/apprise-1.5.full.js",null,true);
+$.getScript("js/game/error.js",null,true);
 $.getScript("js/moment.min.js",function(){$.getScript("js/th.js",function(){moment.lang('th');},true);},true);
 
 function login(){
+	load.show();
 	action('memberLogin',{
 		member_username:$('#member_username').val(),
 		member_password:SHA1($('#member_password').val())
@@ -25,11 +27,14 @@ function login(){
 
 
 function logon(data){
-	if (!data.error){
+	//if (!data.error){
+		
 		location.href = 'main.html';
-	} else {
-		alert(data.error + '\n' +data.message);
-	}
+	/*} else {
+		console.log(response.error );
+		load.show('เกิดข้อผิดพลาด! ชื่อผู้ใช้ และ/หรือรหัสผ่านไม่ถูกต้อง<br/> กรุณาลองใหม่อีกครั้ง<br/>');
+		unLoad();
+	}*/
 }
 
 

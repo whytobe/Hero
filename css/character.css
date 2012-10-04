@@ -35,4 +35,62 @@
     color:#08FFB1;
 }
 
+/*-----------------------------------------------------------------------------*/
+/*------------------------- Start Status Style -------------------------*/
+/*-----------------------------------------------------------------------------*/
+td.width1-6{
+	width:16.66%;	
+	vertical-align:middle;
+	border: 2px outset;
+	line-height:20px;
+}
 
+tr.height20{
+	height:20px;	
+}
+tr.height30{
+	height:30px;	
+}
+tr.height60{
+	height:60px;	
+}
+td.bold{
+	font-weight:bold;	
+}
+td.str-table:hover,td.int-table:hover,td.agi-table:hover,td.vit-table:hover,td.dex-table:hover,td.luk-table:hover{
+	color:#fff;
+}
+td.str-table{border-color:#F36;}
+td.str-table:hover{background-color:#F36;}
+
+td.int-table{border-color:#39C;}
+td.int-table:hover{background-color:#39C;}
+
+td.agi-table{	border-color:#3C6;}
+td.agi-table:hover{background-color:#0E6F2D;}
+
+td.dex-table{	border-color:#F6C;}
+td.dex-table:hover{	background-color:#F6C;}
+
+td.luk-table{	border-color:#FC0;}
+td.luk-table:hover{	background-color:#CFB018;}
+
+td.vit-table{	border-color:#93F;}
+td.vit-table:hover{	background-color:#93F;}
+
+.addStat{
+	line-height:10px;
+	font-size:10px;
+	display:inline-block;
+	height:10px;
+	width:10px;
+	padding:0px;
+	margin:0px 5px 0px 5px;
+	border:1px solid #000;
+	color:#fff;
+	background-color:#000;
+	cursor:pointer;
+}
+/*-----------------------------------------------------------------------------*/
+/*------------------------- End Status Style -------------------------*/
+/*-----------------------------------------------------------------------------*/

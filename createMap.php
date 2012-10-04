@@ -169,7 +169,13 @@
 		                 .on('selectstart', false);
 		    };
 			})(jQuery);
-			$('body').disableSelection();
+			//$('body').disableSelection();
+			
+			function setToclipboard(valToSet) {
+				if (window.clipboardData && clipboardData.setData) {
+					clipboardData.setData("Text", valToSet);
+				}
+			}
         </script>
         <div style="color:#fff;line-height:25px;">
 	        <!--ชื่อแผนที่ : <input type="text" id="map_id" /> <br/>--></br/>
@@ -177,7 +183,7 @@
 	        Old path <br/>
 	        <textarea id="map_path"></textarea></br>
 	        New path <br/>
-	        <textarea id="new_path"></textarea></br>
+	        <textarea id="new_path" onclick="setToclipboard($(this).html())"></textarea></br>
 	        <button onclick="getPath()">Get path</button>
 		</div>
         <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. 

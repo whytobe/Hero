@@ -45,17 +45,20 @@ function Character(character_model,isMe){
 		this.contextMenu = $('<ul id="context_'+this.id+'" class="contextMenu"/>');
 		$('<li/>').addClass('name').append($('<a/>').attr('href','#name').html(this.name)).appendTo(this.contextMenu);
 		$('<li/>').addClass('active').append($('<a/>').attr('href','#active').html(this.character_model.character_active)).appendTo(this.contextMenu);
-		$('<li/>').addClass('addfriend separator').append($('<a/>').attr('href','#addfriend').html('เพิ่มเป็นเพื่อน')).appendTo(this.contextMenu);
+		/*$('<li/>').addClass('addfriend separator').append($('<a/>').attr('href','#addfriend').html('เพิ่มเป็นเพื่อน')).appendTo(this.contextMenu);*/
 		$('<li/>').addClass('request separator').append($('<a/>').attr('href','#request').html('ท้าประลอง')).appendTo(this.contextMenu);
 		this.contextMenu.appendTo($('#contextCanvas'));
 		this.model.contextMenu({
 						menu: 'context_'+this.id
 					}, function(request, el, pos) {
-						
-						load.show();
-						refreshData.battle = new Object();
-						refreshData.battle.request = new Object();
-						refreshData.battle.request.character_id = $(el).attr('character_id');
+						switch(request){
+							case 'request' :
+								load.show();
+								refreshData.battle = new Object();
+								refreshData.battle.request = new Object();
+								refreshData.battle.request.character_id = $(el).attr('character_id');
+							break;
+						}
 						//action(request,{battle:{character_id:}},handle); 
 					});
 	} else {

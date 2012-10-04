@@ -15,7 +15,15 @@
 	  return $object;
 	}
 
-	
+	function myUser($character_info){
+		if (isset($_SESSION[USER])){
+			return isset($character_info)? $_SESSION[USER]->character[$character_info] :  $_SESSION[USER];	
+		} else {
+			$result = new Result();
+			$result->errorCode(1002);
+		}
+	}
+
 	class Result{
 		var $set;
 		function error($resultError,$resultMessage){
