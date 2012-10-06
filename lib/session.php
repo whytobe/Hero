@@ -13,4 +13,5 @@
 	//unset($_SESSION[battle]);
 	//echo microtime(true);
 	//echo substr('test', 0,-1)
+	echo myUser(null)->maxExp();
 ?>

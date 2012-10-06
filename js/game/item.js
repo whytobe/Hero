@@ -24,50 +24,52 @@ function showItem(items){
 		//$('#'+itemZone).append(itemHtml);
 	});
 	clicks = 0;
-	 $("#equipItem div.item-icon,#useItem div.item-icon").unbind('click').bind("click", function(e){
-		item = $(this);
+	 $("#equipItem div.item-icon,#useItem div.item-icon").off().on("click", function(e){
+		item_id = $(this).attr('id');
         clicks++;  //count clicks
 
         if(clicks === 1) {
             timer = setTimeout(function() {
             	clicks = 0;             //after action performed, reset counter
             	
-                getDetail($(item).attr('id'));          
+                getDetail(item_id);          
             }, 250);
 
         } else {
             clearTimeout(timer);    //prevent single-click action
             clicks = 0;             //after action performed, reset counter
-            manageItem('use',$(item).attr('id'))
+            manageItem('use',item_id)
            	//alert('use ' + $(item).attr('id'));
            	//useItem(id);
            	
 		}
     });
 
-	$('#unuseItem div.item-icon').unbind('click').bind('click',function(){
+	$('#unuseItem div.item-icon').off().on('click',function(){
 		getDetail($(this).attr('id'))
 	});
 	
-	$('td.equip-slot').unbind('click').bind("click", function(e){
-		item = $(this);
-        clicks++;  //count clicks
-
-        if(clicks === 1) {
-            timer = setTimeout(function() {
-            	clicks = 0;             //after action performed, reset counter
-            	
-                if ($(item).children().length>0) getDetail($(item).children().attr('id'));       
-            }, 250);
-
-        } else {
-            clearTimeout(timer);    //prevent single-click action
-            clicks = 0;             //after action performed, reset counter
-            manageItem('use',$(item).children().attr('id'))
-           	//alert('use ' + $(item).attr('id'));
-           	//useItem(id);
-           	
-		}
+	$('td.equip-slot').off().on("click", function(e){
+		 if ($(this).children().length>0) {
+		 	item_id = $(this).children().attr('id');
+	        clicks++;  //count clicks
+	
+	        if(clicks === 1) {
+	            timer = setTimeout(function() {
+	            	clicks = 0;             //after action performed, reset counter
+	            	
+	               getDetail(item_id);       
+	            }, 250);
+	
+	        } else {
+	            clearTimeout(timer);    //prevent single-click action
+	            clicks = 0;             //after action performed, reset counter
+	            manageItem('use',item_id);
+	           	//alert('use ' + $(item).attr('id'));
+	           	//useItem(id);
+	           	
+			}
+		 }
     });
 	
 	
@@ -104,8 +106,9 @@ function itemDetail(data){
 	$('#item-info').html('<b>จำนวน</b> : '+data.item_count+' ชิ้น<br/><b>ราคา</b> : '+(data.item_price/2)+' ยุน<br/><b>รายละเอียด</b> :<br/>'+data.item_description);
 	$('#item-name').html(data.item_name);
 	if (data.item_type != 0) $('#item-mgr').html('<div class="manage use" manage="use">ใช้งาน/สวมใส่/ถอด</div><div class="manage drop" manage="drop">โยนทิ้ง</div>').attr('uid',data.character_item_id);
-	$('#item-mgr .manage').unbind('click').bind('click',function(){
-		item = $(this);
-		manageItem(item.attr('manage'),item.parent().attr('uid'));
+	$('#item-mgr .manage').off().on('click',function(){
+		item_id = $(this).parent().attr('uid');
+		manage_type = $(this).attr('manage');
+		manageItem(manage_type,item_id);
 	});
 }

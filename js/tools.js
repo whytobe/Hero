@@ -9,6 +9,7 @@ var pulse_color = "FF0000" ;
 var soul_color = "486DE7";
 var exp_color = "000000";
 var itemColor = ['#CCCCBB','#33CCBB','#008844'];
+var mute = false;
 var pageHTML = {
 	//<div id="preload"><div class="centerscreen"><img src="img/preload.gif" />
 	'item' : '<div class="divbox"><div style="display:block;float:left;width:40%;"><br/><center><table cellpadding=0 cellspacing=0 border=0><tr height="30px"><td colspan=2 id="item-name"></td></tr><tr height="50px"><td id="item-img"class="midcen"></td><td id="item-mgr"class="midcen"colspan=2>จัดการไอเท็ม</td></td><tr height="120px"><td id="item-info"colspan=3>Item info</td></tr><tr><td id="gloves"class="equip-slot midcen"></td><td id="head"class="equip-slot midcen"></td><td id="garment"class="equip-slot midcen"></td></tr><tr><td id="righthand"class="equip-slot midcen"></td><td id="body"class="equip-slot midcen"></td><td id="lefthand"class="equip-slot midcen"></td></tr><tr><td id="acc1"class="equip-slot midcen"></td><td id="foots"class="equip-slot midcen"></td><td id="acc2"class="equip-slot midcen"></td></tr></table></center></div><div style="display:block;float:right;width:60%;"><br/><table cellpadding=0 cellspacing=0 border=0 width="100%"><tr><td class="item-list-head midcen use"style="background:#3cb;">ใช้งาน<td></tr><tr><td id="useItem"class="item-list use"colspan=3></td></tr><tr height="5px"></tr><tr><td class="item-list-head midcen equip"style="background:#084;">สวมใส่<td></tr><tr><td id="equipItem"class="item-list equip"colspan=3></td></tr><tr height="5px"></tr><tr><td class="item-list-head midcen unuse"style="background:#ccb;">ทั่วไป<td></tr><tr><td id="unuseItem"class="item-list unuse"colspan=3></td></tr></table></div><br style="clear:both"/></div>'
@@ -16,6 +17,29 @@ var pageHTML = {
 	,'battle' : '<div class="divbox"><div>การต่อสู้ระหว่าง<span id="myCharacter"></span>กับ....<span id="enemy"></span></div><button id="attack_button"onclick="battle.attack(0)">attack</button><div id="battleResult"class="scrolling"style="height:400px;"></div></div>'
 }
 $('.hideButton').click(toggleUserBar);
+
+function playSound(filename,loop){
+	if (!mute) {
+		soundHandle = document.getElementById('soundHandle');
+		soundHandle.src = 'sound/'+filename+'.ogg';
+		soundHandle.loop = (typeof loop !== undefined)? loop : false;
+		soundHandle.play();
+	}
+}
+$(document).ready(function(){
+	$('.muteButton').click(function(){
+		muteIcon = $(this).children();
+		soundHandle = document.getElementById('soundHandle');
+		if (mute) {
+			soundHandle.play();
+			muteIcon.attr('class','ui-icon ui-icon-volume-on');
+		} else {
+			soundHandle.pause();
+			muteIcon.attr('class','ui-icon ui-icon-volume-off');
+		}
+		mute = !mute;
+	});
+});
 function toggleUserBar(){
 	if ($('#user_bar').css('bottom') == '0px'){
 		$('#user_bar').animate({'bottom':'-50px'},function() {$('.hideButton').html('<span class="ui-icon ui-icon-triangle-1-n"></span>');});

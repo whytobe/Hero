@@ -30,33 +30,31 @@
         </div>
         <div id="user_bar">
         	<div class="hideButton"><span class="ui-icon ui-icon-triangle-1-s"></span></div>
-			<table id="user_table">
-				<tr>
-					<td id="character_info" style="padding-left:15px">
-		                <span id='character_exp'><div class="exp_indicator indicator" ></div></span>   
-						ชื่อ : <span class='character_name' class='bold'></span>  อาชีพ : <span class='character_job'></span>  ระดับ : <span class='character_lv'>-</span>  <img src="img/icon/fame.png" title="header=[ชื่อเสียง] body=[แสดงระดับชื่อเสียงของตัวละคร เป็นค่าที่จำเป็นสำหรับการเรียนรู้ัวิชา รวมไปถึงการใช้ไอเท็มต่างๆ]" class="margin-2"/> : <span class='character_fame'></span>  <img src="img/icon/money.png" title="header=[เงิน] body=[จำนวนเงินที่มีอยู่ในกระเป๋าสตางค์ โดยมีหน่วยเป็น 'ยุน' ใช้สำหรับจับจ่ายซื้ออาวุธ ไอเท็ม ไปจนถึงค่าใช้จ่ายสำหรับเรียนรู้วิชาต่างๆ]" class="margin-2" /> : <span class='character_money' style='color:#BF9B2E'></span> ยุน
-						<br />ชีพจร : <span id='pulse'><div class="pulse_indicator indicator" ></div></span>
-						  ลมปราณ : <span id='soul'><div class="soul_indicator indicator" ></div></span> 
-					</td>
-					<td style="" >
-						<img src="img/icon/refresh.png" width="16px" height="16px" title="header=[ปรับปรุงข้อมูล] body=[คลิกเพื่อปรับปรุงข้อมูลตัวละคร]" onclick='javascript:loadUserBar();'/>
-					</td>
-					<td width=40% class="icon_bar">
-						<a onclick="menu('status')" title="สถานะตัวละคร"><img class="userbaricon" src="img/icon/status.png" width="35px" height="35px" title="header=[Character Status] body=[ดูสถานะตัวละคร จัดการเพิ่ม ลดความสามารถของตัวละคร]" /></a>
-						<a onclick="menu('item')" title="อุปกรณ์และของใช้" class="openBox"><img class="userbaricon" src="img/icon/equip.png" width="35px" height="35px" title="header=[Equipments] body=[เปิดหน้าต่างสวมใส่อุปกรณ์]" /></a>
-						<!--<a href="data/item.php" title="หน้าต่างไอเท็ม" class="openBox"><img class="userbaricon" src="img/icon/item.png" width="35px" height="35px" title="header=[Items] body=[เปิดหน้าต่างไอเท็ม ที่มีอยู่ในกระเป๋าเดินทาง]" /></a>-->
-						<a onclick="menu('skill')" title="ความสามารถของตัวละคร" class="openBox"><img class="userbaricon" src="img/icon/skill.png" width="35px" height="35px" title="header=[Skills] body=[เปิดหน้าต่างแสดงความสามารถพิเศษ]" /></a>
-						<a id='chatbutton'><img class="userbaricon" src="img/icon/chat.png" width="35px" height="35px" title="header=[เปิด/ปิด หน้าต่าง Chat] body=[กดเพื่อซ่อน หรือแสดงหน้าต่างสนทนา]" alt="chat" /></a>
-		                <a href="logout.php?action=logout"><img class="userbaricon" src="img/icon/exit.png" width="35px" height="35px" title="header=[ออกจากระบบ] body=[สิ้นสุดการเดินทางของวันนี้]" /></a>
-		                
-					</td>
-		
-				</tr>
-			</table>
-			
+        	<div class="muteButton"><span class="ui-icon ui-icon-volume-on"></span></div>
+			<div id="user_table">
+				<div style="width: 20px; height:20px;float:left;margin-top:15px;" >
+					<img src="img/icon/refresh.png" width="16px" height="16px" title="header=[ปรับปรุงข้อมูล] body=[คลิกเพื่อปรับปรุงข้อมูลตัวละคร]" onclick='javascript:loadUserBar();'/>
+				</div>
+				<div id="character_info" style=" padding-top: 5px;width:320px;float:left">
+	                <span id='exp'><div class="exp_indicator indicator" ></div></span>   
+					ชื่อ : <span class='character_name' class='bold'></span>  อาชีพ : <span class='character_job'></span>  ระดับ : <span class='character_lv'>-</span>  <img src="img/icon/fame.png" title="header=[ชื่อเสียง] body=[แสดงระดับชื่อเสียงของตัวละคร เป็นค่าที่จำเป็นสำหรับการเรียนรู้ัวิชา รวมไปถึงการใช้ไอเท็มต่างๆ]" class="margin-2"/> : <span class='character_fame'></span>  <img src="img/icon/money.png" title="header=[เงิน] body=[จำนวนเงินที่มีอยู่ในกระเป๋าสตางค์ โดยมีหน่วยเป็น 'ยุน' ใช้สำหรับจับจ่ายซื้ออาวุธ ไอเท็ม ไปจนถึงค่าใช้จ่ายสำหรับเรียนรู้วิชาต่างๆ]" class="margin-2" /> : <span class='character_money' style='color:#BF9B2E'></span> ยุน
+					<br />ชีพจร : <span id='pulse'><div class="pulse_indicator indicator" ></div></span>
+					  ลมปราณ : <span id='soul'><div class="soul_indicator indicator" ></div></span> 
+				</div>
+				
+				<div style="float:right;margin-right:15px" class="icon_bar">
+					<a onclick="menu('status')" title="สถานะตัวละคร"><img class="userbaricon" src="img/icon/status.png" width="35px" height="35px" title="header=[Character Status] body=[ดูสถานะตัวละคร จัดการเพิ่ม ลดความสามารถของตัวละคร]" /></a>
+					<a onclick="menu('item')" title="อุปกรณ์และของใช้" class="openBox"><img class="userbaricon" src="img/icon/equip.png" width="35px" height="35px" title="header=[Equipments] body=[เปิดหน้าต่างสวมใส่อุปกรณ์]" /></a>
+					<!--<a href="data/item.php" title="หน้าต่างไอเท็ม" class="openBox"><img class="userbaricon" src="img/icon/item.png" width="35px" height="35px" title="header=[Items] body=[เปิดหน้าต่างไอเท็ม ที่มีอยู่ในกระเป๋าเดินทาง]" /></a>-->
+					<a onclick="menu('skill')" title="ความสามารถของตัวละคร" class="openBox"><img class="userbaricon" src="img/icon/skill.png" width="35px" height="35px" title="header=[Skills] body=[เปิดหน้าต่างแสดงความสามารถพิเศษ]" /></a>
+					<a id='chatbutton'><img class="userbaricon" src="img/icon/chat.png" width="35px" height="35px" title="header=[เปิด/ปิด หน้าต่าง Chat] body=[กดเพื่อซ่อน หรือแสดงหน้าต่างสนทนา]" alt="chat" /></a>
+	                <a href="logout.php?action=logout"><img class="userbaricon" src="img/icon/exit.png" width="35px" height="35px" title="header=[ออกจากระบบ] body=[สิ้นสุดการเดินทางของวันนี้]" /></a>
+	                
+				</div>
+			</div>
 		</div>
         <div id="contextCanvas"></div>
-
+		<audio id="soundHandle" style="display: none;"></audio>
         <!--<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>-->
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.8.0.min.js"><\/script>')</script>
         <script src="js/plugins.js"></script>

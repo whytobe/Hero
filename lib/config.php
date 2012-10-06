@@ -9,6 +9,10 @@
 	mysql_select_db($db_tablename,$conn) or die(mysql_error());
 	mysql_query("SET NAMES 'utf8'") or die(mysql_error());
 	
+	function appox($value){
+		return ceil(rand(75,125)*$value/100);
+	}
+	
 	function fixObject (&$object){
 	  if (!is_object ($object) && gettype ($object) == 'object')
 	    return ($object = unserialize (serialize ($object)));
@@ -157,7 +161,8 @@
 			if (count($this->set) and count($this->where) and !empty($this->table)){
 				$this->commandText = 'update '.$this->table.' set ';
 				foreach ($this->set as $key => $value){
-					$this->commandText .= $key.' = '.(is_numeric($value)? $value.',' : '\''.$value.'\',');
+					if (substr($value,0,strlen($key)) == $key) $this->commandText .= $key.' = '.$value.',';
+					else $this->commandText .= $key.' = '.(is_numeric($value)? $value.',' : '\''.$value.'\',');
 				}
 				$this->commandText = substr($this->commandText, 0,-1);
 				

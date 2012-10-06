@@ -48,9 +48,11 @@ function Character(character_model,isMe){
 		/*$('<li/>').addClass('addfriend separator').append($('<a/>').attr('href','#addfriend').html('เพิ่มเป็นเพื่อน')).appendTo(this.contextMenu);*/
 		$('<li/>').addClass('request separator').append($('<a/>').attr('href','#request').html('ท้าประลอง')).appendTo(this.contextMenu);
 		this.contextMenu.appendTo($('#contextCanvas'));
+		//this.model.contextmenu(function(){console.log('context event')});
 		this.model.contextMenu({
 						menu: 'context_'+this.id
 					}, function(request, el, pos) {
+						console.log('showContextMenu');
 						switch(request){
 							case 'request' :
 								load.show();

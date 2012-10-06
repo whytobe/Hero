@@ -3,7 +3,11 @@
     left:-50px;
     margin-top:-50px;
 }
-
+.muteButton {
+    left: 333px;
+    position: absolute;
+    top: 15px;
+}
 .hideButton {
     background-color: #fff;
     border: 1px solid #FFFFFF;
@@ -31,7 +35,11 @@
     margin-left:-315px;
     left:50%;
     bottom:0px;
-    cursor:pointer;;
+    cursor:pointer;
+}
+
+.text-center{
+	text-align:center;
 }
 #user_table{
     margin:5px 10px 0px;
@@ -82,12 +90,18 @@
     border:1px #0E16A4 solid;
 }
 #exp{
-    height:2px;
-    width:600px;
-    margin-left:-300px;
-    position:absolute;
-    left:50%;
-    top:8px;
+    border: 1px solid #156F40;
+    height: 2px;
+    left: 50%;
+    margin-left: -300px;
+    position: absolute;
+    top: 7px;
+    width: 590px;
+}
+.pointInfo{
+	font-size:0.8em;
+	vertical-align: super;
+	margin-left:-5px;
 }
 .userbaricon{
     opacity: 0.3;

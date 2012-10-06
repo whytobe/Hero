@@ -237,8 +237,9 @@ function noticeNote(response){
 function noticeBattle(notice){
 	if (notice.battle.start){
 		battle = new Battle();
-		battle.initBattle();
 		if (notice.battle.enemy) battle.enemy = notice.battle.enemy;
+		battle.initBattle();
+		
 	} else {
 		if (!waitForBattle){
 			if (notice.battle.response){
@@ -262,8 +263,9 @@ function noticeBattle(notice){
 				load.show();
 			} else if (notice.battle.start) {
 				battle = new Battle();
-				battle.initBattle();
 				if (notice.battle.enemy) battle.enemy = notice.battle.enemy;
+				battle.initBattle();
+				
 			}
 		} 
 	} 
@@ -290,9 +292,12 @@ function menu(type){
 			page.title = 'Character Status';
 	}
  	$.fancybox.open({
-        type:'html'
+ 		//type:'html'
+        type:'ajax'
+        
         ,modal:false
-        ,content:pageHTML[page.type]
+        //,content:pageHTML[page.type]
+        ,href:'pages/'+page.type+'.php'
 		,title:page.title
 		,autoSize:true
 		,afterLoad : function(){

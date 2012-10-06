@@ -25,12 +25,18 @@
 		$this->initialCharacter();
 		$result = new Result();
 		$result->set[status] = $this->character;
+		$baseExp = pow((($this->character[character_lv])*2),4);
+		$result->set[status][character_exp] -= $baseExp;
+		$result->set[status][character_max_exp] -= $baseExp;
 		$result->returnData();	
 	}
 	
 	function getCharInfo(){
 		$result = new Result();
 		$result->set[me] = $this->character;
+		$baseExp = pow((($this->character[character_lv])*2),4);
+		$result->set[me][character_exp] -= $baseExp;
+		$result->set[me][character_max_exp] -= $baseExp;
 		$result->returnData();	
 	}
 	
@@ -101,15 +107,72 @@
 		return $this->character[character_id];
 	}
 	
-	function getMaxExp(){
-		return ((($this->character[character_lv]+1)*2)^3);
+	function maxExp(){
+		return pow((($this->character[character_lv]+1)*2),4);
+			
+	}
+	
+	function existItem($item_id){
+		$read = new Reader();
+		$read->commandText = 'select character_item_id,item_type,item_count from character_item,item where character_item.item_id = item.item_id and character_item.item_id = '.$item_id.' and character_id = '.$this->character[character_id];
+		if ($db = $read->read()){
+			return ($db[item_type] != '2')? false : true;
+		} else {
+			return false;
+		}
+	}
+	
+	function getItem($drop_rate){
+		if ($drop_rate){
+			$result = new Result();
+			foreach ($drop_rate as $key => $value) {
+				if (rand(0,100) <= $value){
+					if ($this->existItem($key)){
+						$insert = new Inserter();
+						$insert->table = 'character_item';
+						$insert->set[character_id] = $this->character[character_id];
+						$insert->set[item_id] = $key;
+						//$insert->set[item_count] = 1;
+						$insert->execute();
+					} else {
+						$update = new Updater();
+						$update->table = 'character_item';
+						$update->set[item_count] = 'item_count + 1';
+						$update->where[character_id] = $this->character[character_id];
+						$update->where[item_id] = $key;
+						echo $update->commandText;
+						$update->execute();
+					}
+					
+					$itemdrop[id] = $key;
+					$itemdrop[count] = 1;
+					$result->set[result][item_drop][] = $itemdrop;
+				}
+			}	
+			$result->returnData();		
+		} 
+	}
+	
+	function levelUp($exp){
+		//$this->character[character_max_exp] = ((($this->character[character_lv]+1)*2)^3);
+		$this->character[character_max_exp] = $this->maxExp();
+		$this->character[character_exp] += $exp;
+		if ($this->character[character_exp] >= $this->character[character_max_exp]){
+			$this->character[character_lv]++;
+			$this->character[character_status_point] += 10+((ceil($this->character[character_lv]/10)+1)*2);
+			$this->updateStatus();
+			return true;
+		} else {
+			$this->save();
+			return false;
+		}
 	}
 	
 		function initialCharacter(){
 			$data = new Reader();
 			$data->commandText = 'select * from characters where character_id = '.$this->character[character_id];
 			$this->character = $data->read();
-			$this->character[character_max_exp] = $this->getMaxExp();
+			$this->character[character_max_exp] = $this->maxExp();
 			$data->free();	
 			/*$character = $data->read();
 			foreach ($character as $key => $value){
@@ -135,7 +198,7 @@
 			$data = new Updater();
 			$data->table = 'characters';
 			$data->set = $this->character;
-			if ($data->set[character_max_exp]) unset($data->set[character_max_exp]);
+			if (isset($data->set[character_max_exp])) unset($data->set[character_max_exp]);
 			$data->where[character_id] = $this->character[character_id];
 			unset($data->set[character_id]);
 			unset($data->set[character_online_unique]);
@@ -156,8 +219,12 @@
 		}
 		function refreshUserBar(){
 			$this->initialCharacter();
+			
 			$result = new Result();
 			$result->set[user_bar][character] = $this->character;
+			$baseExp = pow((($this->character[character_lv])*2),4);
+			$result->set[user_bar][character][character_exp] -= $baseExp;
+			$result->set[user_bar][character][character_max_exp] -= $baseExp;
 			$result->returnData();
 		}
 		

@@ -4,7 +4,8 @@ var MAP = {
 	height : 32, 
 	width : 32,
 	blockClass : ['','move','event'],
-	path : null
+	path : null,
+	id : null
 };
 
 function offsetFromPosition(position){
@@ -21,10 +22,15 @@ function positionFromOffset(offset){
 function mapInitial(map_id,path){
 	
 	//Initial Map Canvas
+	MAP.path = path;
+	MAP.id = map_id;
+	if (map_id){
+		playSound(MAP.id.substr(0,4),true);
+	}
 	$('#mapCanvas').animate({opacity:0},function(){
     	$('#mapCanvas').attr('style','background-image:url(img/map/'+map_id+'.png);opacity:0');
 	}).animate({opacity:1},1000);
-	MAP.path = path;
+	
 	
 	//Initial Path Canvas
 	$('#pathCanvas').html(''); // Clear old canvas.

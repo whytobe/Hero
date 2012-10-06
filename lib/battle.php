@@ -119,29 +119,45 @@
 			myUser(null)->setActive('เดินทาง... ');
 			$result = new Result();
 			$result->set[result][win] = $winner;
-			//if (isset($this->monster)) $result->set[result][gotItem] = $this->getExp($winner);
-			$result->returnData(); 
+			$result->returnData();
+			$this->getExp($winner);
+			if ($winner === true) $this->getItem(); 
 			$this->clearBattleSession();
 		}
 		
 		function getExp($winner){
 			$result = new Result();
 			if (isset($this->enemy)){
-				
+				$result->set[result][exp] = appox($this->getExpByLv($this->enemy[character_lv]));
 			} else if (isset($this->monster)){
-				
+				if (!isset($this->monster[monster_exp])){
+					$result->set[result][exp] = appox($this->getExpByLv($this->monster[monster_lv]));
+				} else {
+					$result->set[result][exp] = appox($this->monster[monster_exp]);
+				}
 			} else {
 				$result->errorCode(4007);
 			}
+			$result->set[result][exp] = ($winner === true)? $result->set[result][exp] : $result->set[result][exp]/4;
+			if (myUser(null)->levelUp($result->set[result][exp])) {
+				$result->set[result][lvup] = true;
+			}
+			$result->returnData();
+		}
+		
+		function getExpByLv($level){
+			return ($level*64)+100;
 		}
 		
 		function getItem(){
-			$result = new Result();
+			
 			if (isset($this->enemy)){
-				
+				return false;
 			} else if (isset($this->monster)){
-				
+				$drop_rate = json_decode($this->monster[monster_droprate]);
+				myUser(null)->getItem($drop_rate);
 			} else {
+				$result = new Result();
 				$result->errorCode(4008);
 			}
 		}
