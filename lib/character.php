@@ -7,7 +7,7 @@
 	 * USER_PASSWORD **
 	 */	
 	function addPoint($data){
-		myUser(null)->addPoint($data[addPoint]);
+		myUser()->addPoint($data[addPoint]);
 	}
 	
 	class User{
@@ -25,7 +25,7 @@
 		$this->initialCharacter();
 		$result = new Result();
 		$result->set[status] = $this->character;
-		$baseExp = pow((($this->character[character_lv])*2),4);
+		$baseExp = pow((($this->character[character_lv])*2),3);
 		$result->set[status][character_exp] -= $baseExp;
 		$result->set[status][character_max_exp] -= $baseExp;
 		$result->returnData();	
@@ -34,7 +34,7 @@
 	function getCharInfo(){
 		$result = new Result();
 		$result->set[me] = $this->character;
-		$baseExp = pow((($this->character[character_lv])*2),4);
+		$baseExp = pow((($this->character[character_lv])*2),3);
 		$result->set[me][character_exp] -= $baseExp;
 		$result->set[me][character_max_exp] -= $baseExp;
 		$result->returnData();	
@@ -108,7 +108,7 @@
 	}
 	
 	function maxExp(){
-		return pow((($this->character[character_lv]+1)*2),4);
+		return pow((($this->character[character_lv]+1)*2),3);
 			
 	}
 	
@@ -125,8 +125,9 @@
 	function getItem($drop_rate){
 		if ($drop_rate){
 			$result = new Result();
+			$drop = rand(0,100);
 			foreach ($drop_rate as $key => $value) {
-				if (rand(0,100) <= $value){
+				if ($drop <= $value){
 					if ($this->existItem($key)){
 						$insert = new Inserter();
 						$insert->table = 'character_item';
@@ -153,19 +154,21 @@
 		} 
 	}
 	
-	function levelUp($exp){
+	function levelUp($exp = 0){
 		//$this->character[character_max_exp] = ((($this->character[character_lv]+1)*2)^3);
 		$this->character[character_max_exp] = $this->maxExp();
 		$this->character[character_exp] += $exp;
-		if ($this->character[character_exp] >= $this->character[character_max_exp]){
+		$levelup = false;
+		while ($this->character[character_exp] >= $this->character[character_max_exp]){
 			$this->character[character_lv]++;
 			$this->character[character_status_point] += 10+((ceil($this->character[character_lv]/10)+1)*2);
-			$this->updateStatus();
-			return true;
-		} else {
-			$this->save();
-			return false;
-		}
+			$this->character[character_max_exp] = $this->maxExp();			
+			$levelup = true;
+		} 
+		$this->updateStatus();
+		$this->save();
+		return $levelup;
+		
 	}
 	
 		function initialCharacter(){
@@ -180,6 +183,23 @@
 			}
 			$data->free();	*/	
 			//print_r($this->character);
+		}
+		
+		function gotMoney($money){
+			$this->initialCharacter();
+			$this->character[character_money] += $money;
+			$this->save();
+		}
+		
+		function spendMoney($money){
+			$this->initialCharacter();
+			if ($money <= $this->character[character_money] && $money > 0){
+				$this->character[character_money] -= $money;
+				$this->save();
+			} else {
+				$result = new Result();
+				$result->errorCode(2003);
+			}
 		}
 		
 		function isOnline(){
@@ -222,7 +242,7 @@
 			
 			$result = new Result();
 			$result->set[user_bar][character] = $this->character;
-			$baseExp = pow((($this->character[character_lv])*2),4);
+			$baseExp = pow((($this->character[character_lv])*2),3);
 			$result->set[user_bar][character][character_exp] -= $baseExp;
 			$result->set[user_bar][character][character_max_exp] -= $baseExp;
 			$result->returnData();
@@ -231,7 +251,8 @@
 				
 		function getCharacters(){
 			$reader = new Reader();
-			$reader->commandText = 'select character_id,character_name,map_id,character_active,character_last_active from characters where substr(map_id,8) not in(select map_position from map_event where map_id = \''.substr($this->character[map_id], 0,6).'\') and map_id like \''.substr($this->character[map_id], 0,6).'%\' and character_id != '.$this->character[character_id];
+			///character_last_active > now() - 300 and
+			$reader->commandText = 'select character_id,character_name,map_id,character_active,character_last_active from characters,member where member.member_id = characters.member_id and substr(map_id,8) not in(select map_position from map_event where map_id = \''.substr($this->character[map_id], 0,6).'\') and map_id like \''.substr($this->character[map_id], 0,6).'%\' and character_id != '.$this->character[character_id];
 			if ($reader->hasRow()){
 				$result = new Result();
 				while ($db = $reader->read()){

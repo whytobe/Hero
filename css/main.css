@@ -321,3 +321,54 @@ textarea {
 div.break{
 	clear:both!important;
 }
+
+body.home{
+	 background-attachment: fixed;
+    background-color: black;
+    background-image: url("../img/home/home.jpg");
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: 80% 80%;
+}
+
+.login_style{
+	border:#ffd700 1px dotted;
+	background-color:#000;
+	color:#ffd700;
+	width:100px;
+	font-size:10pt;
+	text-align:right;
+}
+.login_style:hover{
+	background-color:#ffd700;
+	border-color:#000;
+	color:#000;
+}
+.login_style:active{
+    background-color:#ffd700;
+    border-color:#000;
+    color:#000;
+}
+
+#loginBox{
+	background: url("../img/dim40.png") repeat scroll 0 0 transparent;
+    border: 1px solid black;
+    color: #FFFFFF;
+    height: 130px;
+    line-height: 20px;
+    padding: 20px;
+    position: absolute;
+    right: 10%;
+    top: 35%;
+    width: 100px;
+}
+#login_button{
+	margin-left:-25px;
+	width:150px;
+	height:50px;
+	background:url('../img/home/login.png') 0px 0px ;
+	cursor:pointer;
+}
+#login_button:hover{
+	background:url('../img/home/login.png') 150px 0px ;
+}

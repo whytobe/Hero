@@ -47,7 +47,7 @@ body.gameBG *{
 	color:#105CB6;
 }
 
-#preload{
+.preload{
 	position:absolute;
 	top:0;
 	left:0;

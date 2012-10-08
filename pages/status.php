@@ -1,10 +1,10 @@
-<div style="width:800px;height:500px;margin:0 auto" id="stat_info">
+<div class="divbox" id="stat_info">
 		<div style="display:block;float:left;width:40%;" >
 			<br />
 			<center><table cellpadding=0 cellspacing=0 border=0 width="100%">
 				<tr height="50px">
 					<td id="item-img" class="midcen">รูปผู้เล่น<br />50 x 50px</td>
-					<td id="item-mgr" class="midcen" colspan=2><?=$data[char_name]?></td>
+					<td id="item-mgr" class="midcen" colspan=2></td>
 				</td>
 				<tr height="120px">
 					<td id="item-info" colspan=3>

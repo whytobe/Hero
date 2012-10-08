@@ -21,6 +21,10 @@ var errorMsg = {
 		title : "Username or Password is/are invalid.",
 		description : "Username or Password is/are invalid."
 	}
+	,1004 :{
+		title : "Chat system cannot found any chat message",
+		description : "Cannot pull last chat from database",
+	}
 	
 	// 2XXX is a Character Error;
 	,2001 :{
@@ -30,6 +34,10 @@ var errorMsg = {
 	,2002 :{
 		title : "Unknown status",
 		description : "Status name invalid"
+	}
+	,2003 :{
+		title : "Money is not enough",
+		description : "Money less than require."
 	}
 	// 3XXX is a Event Error;
 	,3001 :{
@@ -101,4 +109,9 @@ var errorMsg = {
 		title : "Unknown item type",
 		description : "Item type is invalid"
 	}
+	,6004 :{
+		title : "Cannot use item while battling",
+		description : "Item can not be used while you're battling"
+	}
+	
 }

@@ -5,6 +5,7 @@ require_once 'item.php';
 require_once 'event.php';
 require_once 'member.php';
 require_once 'battle.php';
+require_once 'chat.php';
 require_once 'character.php';
 session_start();
 
@@ -37,7 +38,9 @@ $result = new Result();
 
 if ($_POST[action] == 'memberLogin'){
 	memberLogin($_POST[data]);
-} else if ($_SESSION[USER] and $_POST[action]) {
+} else if ($_POST[action] == 'newCharacter'){
+	newCharacter($_POST[data]);
+}else if ($_SESSION[USER] and $_POST[action]) {
 	//Check user is online.
 	$myUser = $_SESSION[USER];
 	if ($myUser->isOnline()) {
@@ -83,7 +86,7 @@ function menu($data){
 			getItem();
 			break;
 		case 'status' :
-			myUser(null)->getStatusInfo();
+			myUser()->getStatusInfo();
 			break;
 	}
 }
@@ -121,7 +124,7 @@ function refreshGame($data){
 	$battle->checkRequest();
 		
 	$myUser->getCharacters();
-	
+	getChat();
 	//getEvents();
 	//getMessages();
 	//getChats();

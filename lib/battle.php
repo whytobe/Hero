@@ -116,37 +116,66 @@
 		}
 		
 		function endBattle($winner){
-			myUser(null)->setActive('เดินทาง... ');
+			myUser()->setActive('เดินทาง... ');
 			$result = new Result();
 			$result->set[result][win] = $winner;
 			$result->returnData();
-			$this->getExp($winner);
-			if ($winner === true) $this->getItem(); 
+			if ($winner === true) {
+				$this->getMoney();
+				$this->getItem();
+				$this->getExp();
+				
+				
+			} 
 			$this->clearBattleSession();
 		}
-		
-		function getExp($winner){
+		function getMoney(){
+			
 			$result = new Result();
 			if (isset($this->enemy)){
-				$result->set[result][exp] = appox($this->getExpByLv($this->enemy[character_lv]));
+				$result->set[result][money] = $this->getMoneyByLv($this->enemy[character_lv]);
+				
 			} else if (isset($this->monster)){
-				if (!isset($this->monster[monster_exp])){
-					$result->set[result][exp] = appox($this->getExpByLv($this->monster[monster_lv]));
+				if (!isset($this->monster[monster_money])){
+					$result->set[result][money] = $this->getMoneyByLv($this->monster[monster_lv]);
 				} else {
-					$result->set[result][exp] = appox($this->monster[monster_exp]);
+					$result->set[result][money] = approx($this->monster[monster_money]);
+					
 				}
 			} else {
 				$result->errorCode(4007);
 			}
-			$result->set[result][exp] = ($winner === true)? $result->set[result][exp] : $result->set[result][exp]/4;
-			if (myUser(null)->levelUp($result->set[result][exp])) {
-				$result->set[result][lvup] = true;
-			}
+			$money = $result->set[result][money];
+			myUser()->gotMoney($money);
+			$result->returnData();
+		}
+		function getMoneyByLv($level){
+			return approx($level*50);
+		}
+		function getExp(){
+			$result = new Result();
+
+				if (isset($this->enemy)){
+					$result->set[result][exp] = $this->getExpByLv($this->enemy[character_lv]);
+				} else if (isset($this->monster)){
+					if (!isset($this->monster[monster_exp])){
+						$result->set[result][exp] = $this->getExpByLv($this->monster[monster_lv]);
+					} else {
+						$result->set[result][exp] = approx($this->monster[monster_exp]);
+					}
+				} else {
+					$result->errorCode(4007);
+				}
+				//$result->set[result][exp] = ($winner === true)? $result->set[result][exp] : rand(0,100);
+				if (myUser()->levelUp($result->set[result][exp])) {
+					$result->set[result][lvup] = true;
+				}
+			
 			$result->returnData();
 		}
 		
 		function getExpByLv($level){
-			return ($level*64)+100;
+			return approx(($level*64)+100);
 		}
 		
 		function getItem(){
@@ -155,7 +184,7 @@
 				return false;
 			} else if (isset($this->monster)){
 				$drop_rate = json_decode($this->monster[monster_droprate]);
-				myUser(null)->getItem($drop_rate);
+				myUser()->getItem($drop_rate);
 			} else {
 				$result = new Result();
 				$result->errorCode(4008);
@@ -171,7 +200,12 @@
 				$result = new Result();	
 				$skill = json_decode($this->mySkill[$skill_id][skill_ability]);
 				$skillmultiply = $skill->skill_damage[$this->mySkill[$skill_id][skill_lv] -1];	
-				
+				if (isset($skill->skill_soul)){
+					$use_soul = $skill->skill_soul[$this->mySkill[$skill_id][skill_lv] -1];
+					myUser()->character[character_soul] -= $use_soul;
+					$result->set[result][$this->round][use_soul] = $use_soul;
+					myUser()->save();
+				}
 				$myAtk = myUser('character_atk');
 				$enemyDef = $this->enemy('character_def');
 				
@@ -195,13 +229,23 @@
 				$result->returnData();
 				
 				$this->enemy['character_pulse'] = $this->enemy['character_pulse'] - $result->set[result][$this->round][dmg];
+				
+				//Update Enemy Pulse/Soul
+				$update = new Updater();
+				$update->table = 'characters';
+				$update->set[character_pulse] = $this->enemy['character_pulse'];
+				$update->set[character_soul] = $this->enemy['character_soul'];
+				$update->where[character_id] = $this->enemy['character_id'];
+				$update->execute();
+				
+				//Update Character Battle Log.
 				$updater = new Updater();
 				$updater->table = 'character_battle';
-				//$result->set[result][$this->round][s_id] = $skill_id;
-				//unset($result->set[result][$this->round][name]);
 				$updater->set[battle_result] = addslashes($this->battle[battle_result].json_encode($result->set[result][$this->round])).'-';
 				$updater->where[battle_id] = $this->battle[battle_id];
 				$updater->execute();
+				
+				
 				$this->round++;
 				$this->delay = microtime(true)+myUser('character_atk_delay');
 				$this->checkWinner();
@@ -214,7 +258,12 @@
 				$result = new Result();	
 				$skill = json_decode($this->mySkill[$skill_id][skill_ability]);
 				$skillmultiply = $skill->skill_damage[$this->mySkill[$skill_id][skill_lv] -1];	
-				
+				if (isset($skill->skill_soul)){
+					$use_soul = $skill->skill_soul[$this->mySkill[$skill_id][skill_lv] -1];
+					myUser()->character[character_soul] -= $use_soul;
+					$result->set[result][$this->round][use_soul] = $use_soul;
+					myUser()->save();
+				}
 				$myAtk = myUser('character_atk');
 				$enemyDef = $this->monster('monster_def');
 				
@@ -253,44 +302,49 @@
 		
 		function monsterAttack(){
 			if ($this->battle[battle_request] == 2 && $this->monster_delay <= microtime(true)){
-				$result = new Result();	
-				$monsterAttackSkill = 0;
-				$monsterSkillLevel = 1;
-				$skill = json_decode($this->monster_skill[$monsterAttackSkill][skill_ability]);
-				$skillmultiply = $skill->skill_damage[$monsterSkillLevel  -1];	
-				
-				$myAtk = $this->monster('monster_atk');
-				$enemyDef = myUser('character_def');
-				
-				$myHit = $this->monster('monster_hit');
-				$enemyFlee =  myUser('character_flee');
-				
-				$hit = $this->approx($myHit /($myHit + $enemyFlee) * 100);
-				if (rand(0, 100) < $hit){
-					$damage = $this->approx(($myAtk - $enemyDef)*$skillmultiply);
-					$damage = ($damage < 1)? 1 : ceil($damage);
+				$microtime = microtime(true);
+				while ($this->monster_delay < $microtime) {
+				//for ($now  = $this->monster_delay; $now < $microtime; $now = +$this->monster[monster_atk_delay] ) {
+					$result = new Result();	
+					$monsterAttackSkill = 0;
+					$monsterSkillLevel = 1;
+					$skill = json_decode($this->monster_skill[$monsterAttackSkill][skill_ability]);
+					$skillmultiply = $skill->skill_damage[$monsterSkillLevel  -1];	
 					
-					$result->set[result][$this->round][dmg] = $damage;
-					$result->set[result][$this->round][type] = 'hit';
-				} else {
-					$result->set[result][$this->round][dmg] = 'miss';
-					$result->set[result][$this->round][type] = 'miss';
-				}	
-				$result->set[result][$this->round][id] = 'm';//myUser('character_id');		
-				$result->set[result][$this->round][name] = $this->monster_skill[$monsterAttackSkill][skill_name];
-				$result->set[result][$this->round][lv] = $monsterSkillLevel;
-				$result->returnData();
-				
-				myUser(null)->character['character_pulse'] = myUser(null)->character['character_pulse'] - $result->set[result][$this->round][dmg];
-				$updater = new Updater();
-				$updater->table = 'character_battle';
-				//$result->set[result][$this->round][s_id] = $skill_id;
-				//unset($result->set[result][$this->round][name]);
-				$updater->set[battle_result] = addslashes($this->battle[battle_result].json_encode($result->set[result][$this->round])).'-';
-				$updater->where[battle_id] = $this->battle[battle_id];
-				$updater->execute();
-				$this->round++;
-				$this->monster_delay = microtime(true)+$this->monster[monster_atk_delay];
+					$myAtk = $this->monster('monster_atk');
+					$enemyDef = myUser('character_def');
+					
+					$myHit = $this->monster('monster_hit');
+					$enemyFlee =  myUser('character_flee');
+					
+					$hit = $this->approx($myHit /($myHit + $enemyFlee) * 100);
+					if (rand(0, 100) < $hit){
+						$damage = $this->approx(($myAtk - $enemyDef)*$skillmultiply);
+						$damage = ($damage < 1)? 1 : ceil($damage);
+						
+						$result->set[result][$this->round][dmg] = $damage;
+						$result->set[result][$this->round][type] = 'hit';
+					} else {
+						$result->set[result][$this->round][dmg] = 'miss';
+						$result->set[result][$this->round][type] = 'miss';
+					}	
+					$result->set[result][$this->round][id] = 'm';//myUser('character_id');		
+					$result->set[result][$this->round][name] = $this->monster_skill[$monsterAttackSkill][skill_name];
+					$result->set[result][$this->round][lv] = $monsterSkillLevel;
+					$result->returnData();
+					
+					myUser()->character['character_pulse'] = myUser()->character['character_pulse'] - $result->set[result][$this->round][dmg];
+					myUser()->save();
+					$updater = new Updater();
+					$updater->table = 'character_battle';
+					//$result->set[result][$this->round][s_id] = $skill_id;
+					//unset($result->set[result][$this->round][name]);
+					$updater->set[battle_result] = addslashes($this->battle[battle_result].json_encode($result->set[result][$this->round])).'-';
+					$updater->where[battle_id] = $this->battle[battle_id];
+					$updater->execute();
+					$this->round++;
+					$this->monster_delay += $this->monster[monster_atk_delay];
+				}
 			}
 		}
 		
@@ -358,13 +412,14 @@
 			$this->getSkillInfo();
 			if (isset($this->enemy)) {
 				$this->getEnemyInfo();
-				myUser(null)->setActive('กำลังต่อสู้กับ '.$this->enemy[character_name]);
+				myUser()->setActive('กำลังต่อสู้กับ '.$this->enemy[character_name]);
 				$result->set[notice][battle][enemy] = $this->enemy;
 			} else if (isset($this->monster)){
 				$this->getMonsterInfo();
 				//$this->getMonsterSkillInfo();
-				myUser(null)->setActive('กำลังต่อสู้กับ '.$this->monster[monster_name]);
+				myUser()->setActive('กำลังต่อสู้กับ '.$this->monster[monster_name]);
 				$result->set[notice][battle][enemy] = $this->monster;	
+				$this->monster_delay = microtime(true);
 			}
 			$result->set[notice][battle][start] = true;
 			$this->save();
@@ -431,6 +486,8 @@
 				$updater->where[battle_id] = $this->battle[battle_id];
 				//echo $updater->commandText;
 				$updater->execute();
+				
+				
 			}
 		}
 		

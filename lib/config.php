@@ -9,7 +9,7 @@
 	mysql_select_db($db_tablename,$conn) or die(mysql_error());
 	mysql_query("SET NAMES 'utf8'") or die(mysql_error());
 	
-	function appox($value){
+	function approx($value){
 		return ceil(rand(75,125)*$value/100);
 	}
 	
@@ -19,7 +19,7 @@
 	  return $object;
 	}
 
-	function myUser($character_info){
+	function myUser($character_info = null){
 		if (isset($_SESSION[USER])){
 			return isset($character_info)? $_SESSION[USER]->character[$character_info] :  $_SESSION[USER];	
 		} else {

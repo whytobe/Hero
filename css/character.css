@@ -88,8 +88,23 @@ td.vit-table:hover{	background-color:#93F;}
 	margin:0px 5px 0px 5px;
 	border:1px solid #000;
 	color:#fff;
-	background-color:#000;
+	background-color:#0095FF;
 	cursor:pointer;
+}
+
+.Character .chat {
+    background: none repeat scroll 0 0 rgba(0, 0, 0, 0.4);
+    border: 1px solid #FFFFFF;
+    border-radius: 5px 5px 5px 5px;
+    color: #FFFFFF;
+    font-size: 1em;
+    line-height: 25px;
+    max-height:25px;
+    overflow:hidden;
+    margin-left: -10px;
+    position: absolute;
+    margin-top: -70px;
+    padding: 0 5px;
 }
 /*-----------------------------------------------------------------------------*/
 /*------------------------- End Status Style -------------------------*/

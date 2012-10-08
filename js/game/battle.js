@@ -9,10 +9,15 @@ function Battle(){
 	this.end = false;
 	this.me = null
 	this.playSound = function(filename){
-	 	soundHandle = document.getElementById('battleHandle');
-		soundHandle.src = 'sound/'+filename+'.ogg';
-		soundHandle.loop = false;
-		soundHandle.play();
+		if (!mute){
+			soundHandle = document.getElementById('battleHandle');
+			soundHandle.src = 'sound/'+filename+'.ogg';
+			soundHandle.loop = false;
+			soundHandle.play();
+		} else {
+			soundHandle = document.getElementById('battleHandle');
+			soundHandle.src = null;
+		}
 	}
 	this.initBattle = function(){
 		//pauseGame(); // Stop refresh game.
@@ -52,9 +57,15 @@ function Battle(){
 				$('#battle_info #my_info .name').html(me.character_model.character_name);
 				$('#battle_info #my_info .level').html(me.character_model.character_lv);
 				$('#battle_info #my_info .fame').html(me.character_model.character_fame);
+				$('#battle_info #my_info .photo').css({'background-image':'url(img/member/'+me.character_model.character_id+'.png)','background-size':'100% 100%','background-position':'center center','background-repeat':'no-repeat'}).html('');
+				
 				$('#battle_info #enemy_info .name').html((battle.enemy.character_name)? battle.enemy.character_name : battle.enemy.monster_name);
 				$('#battle_info #enemy_info .level').html((battle.enemy.character_lv)? battle.enemy.character_lv : battle.enemy.monster_lv);
 				$('#battle_info #enemy_info .fame').html((battle.enemy.character_fame) ? battle.enemy.character_fame : '-');
+				$('#battle_info #enemy_info .photo').css({
+					'background-image':'url(img/'+((battle.enemy.character_id)? 'member/'+battle.enemy.character_id : 'monster/'+battle.enemy.monster_id)+'.png)'
+					,'background-size':'100% 100%'
+					,'background-position':'center center','background-repeat':'no-repeat'}).html('');
 			}
 			,beforeShow : function(){
 				load.close();
@@ -77,7 +88,7 @@ function Battle(){
 		battleHTML.find('.roundNumber').html(++battle.roundNumber);
 		battleHTML.find('.roundDetail').addClass((data.id == me.id)? 'mine' : 'enemy').addClass(data.type);
 		battleHTML.find('.attacker').html((data.id == me.id)? me.name : (battle.enemy.character_name)? battle.enemy.character_name : battle.enemy.monster_name);
-		battleHTML.find('.skill').html(data.name+'['+data.lv+']');
+		battleHTML.find('.skill').html(data.name+'<span class="skill_level">'+data.lv+'</span>');
 		battleHTML.find('.damage').html(data.dmg);
 		if (data.dmg != 'miss') {
 			if (data.id == me.id){
@@ -90,7 +101,7 @@ function Battle(){
 		} else if (data.dmg == 'miss') battle.playSound('miss');
 		
 		//if ($("#battleResult.mCustomScrollbar").length > 0) {
-			battleHTML.appendTo('#battleResult .mCSB_container');
+			battleHTML.appendTo('#battleResult .mCSB_container').effect('highlight',2000);
 			$("#battleResult").mCustomScrollbar('update');
 			$("#battleResult").mCustomScrollbar("scrollTo","bottom");
 		/*} else {
@@ -130,13 +141,19 @@ function Battle(){
 	}
 	
 	this.exp = function(response){
-		expHTML = $('<div/>').html('คุณได้รับค่าประสบการณ์ '+response+'').addClass('text-center');
-		$('#battleResult .mCSB_container').append(expHTML);
+		HTML = $('<div/>').html('คุณได้รับค่าประสบการณ์ '+response+'!!').addClass('text-center').addClass('expColor');
+		$('#battleResult .mCSB_container').append(HTML);
+		//console.log(response);
+	}
+	
+	this.money = function(response){
+		HTML = $('<div/>').html('คุณได้รับเงินจำนวน '+response+' ยุน!!').addClass('text-center').addClass('moneyColor');
+		$('#battleResult .mCSB_container').append(HTML);
 		//console.log(response);
 	}
 	
 	this.drop = function(response){
-		dropHTML = $('<div/>').html('ได้รับไอเท็ม').addClass('text-center');
+		dropHTML = $('<div/>').html('ได้รับไอเท็ม').addClass('text-center').addClass('itemColor');
 		dropItem = $('<div/>').addClass('item-drop').appendTo(dropHTML);
 		$.each(response, function(index,value) {
 			dropItem.append('<img class="item-icon-drop" src="img/item/'+value.id+'.png" />x'+value.count+'   ');
@@ -156,11 +173,17 @@ function Battle(){
 					battle.end = true;
 					//console.log(round);
 				} 
-				if (index == 'exp')	battle.exp(round);
+				if (index == 'money') battle.money(round);
 				if (index == 'item_drop') battle.drop(round);
+				if (index == 'exp')	battle.exp(round);
 				if (index == 'lvup') {
 					lvupHTML = $('<div/>').html('ระดับของคุณได้เพิ่มขึ้น!!').addClass('text-center').css({'text-decoration':'underline','color':'#00f'}).click(function(){menu('status')});
 					$('#battleResult .mCSB_container').append(lvupHTML);
+					noticeHTML = '<div>ระดับของคุณได้เพิ่มขึ้น!! <br/>ไปยังหน้าสถานะตัวละคร?</div>';
+					apprise(noticeHTML, {'verify':true,'textYes':'ใช่','textNo':'ช้าก่อน!'}, function(r) {
+						load.close();
+						if(r) menu('status');
+					});
 				}
 				
 			});

@@ -6,8 +6,8 @@
 		$reader->commandText = 'select map_id,map_description,map_name,map_path,monster_id from map where map_id = \''.substr($user[map_id], 0,6).'\' limit 1';
 		$db = $reader->read();
 		if ($reader->hasRow()){
-			myUser(null)->map = $db;
-			unset(myUser(null)->map[map_path]);
+			myUser()->map = $db;
+			unset(myUser()->map[map_path]);
 			$result->set[map] = $db;
 			$result->returnData();
 		} else {

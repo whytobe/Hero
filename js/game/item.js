@@ -112,3 +112,18 @@ function itemDetail(data){
 		manageItem(manage_type,item_id);
 	});
 }
+
+function buyitem(buy_item_id){
+	apprise('ป้อนจำนวนที่ต้องการซื้อ', {'input':'1', 'textOk':'OK'},function(response){
+		//console.log(response);
+		if (response != "False") {
+			response = isNumber(response);			
+			if (response > 0 && response !== false){
+				console.log('buy '+buy_item_id +':'+response);
+				action('buyItem',{item_id:buy_item_id,qty:response},handle);	
+			} else {
+				load.update('กรุณากรอกจำนวนเป็นตัวเลขและมีค่ามากกว่า 0')
+			}
+		}
+	});
+}

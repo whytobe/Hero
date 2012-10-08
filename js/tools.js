@@ -19,9 +19,9 @@ var pageHTML = {
 $('.hideButton').click(toggleUserBar);
 
 function playSound(filename,loop){
+	soundHandle = document.getElementById('soundHandle');
+	soundHandle.src = 'sound/'+filename+'.ogg';
 	if (!mute) {
-		soundHandle = document.getElementById('soundHandle');
-		soundHandle.src = 'sound/'+filename+'.ogg';
 		soundHandle.loop = (typeof loop !== undefined)? loop : false;
 		soundHandle.play();
 	}
@@ -74,7 +74,7 @@ function Label(data,val){
 	$(data).html(val);       
 }
 function preLoad(obj){
-	loader = $("<div id='preload'><div class='centerscreen'><img src='img/preload.gif' /><br /> กรุณารอสักครู่....</div></div>").hide().fadeIn();
+	loader = $("<div class='preload'><div class='centerscreen'><img src='img/preload.gif' /><br /> กรุณารอสักครู่....</div></div>").hide().fadeIn();
 	if (obj == "all"){
 		$(".gameBG").append(loader);
 	} else {
@@ -82,8 +82,12 @@ function preLoad(obj){
 	}
 }
 
+function isNumber(n) {
+  return (!isNaN(parseFloat(n)) && isFinite(n))? Math.floor(n) : false;
+}
+
 function unLoad(){
-	$("#preload").fadeOut(function(){$(this).remove();});
+	$(".preload").fadeOut(function(){$(this).remove();});
 }
 
 function msgBox(text,cb){
@@ -125,11 +129,19 @@ function LoadInfo(){
  	$.fancybox.open({
         type:'iframe',
 		iframe:{
-			preload : false
+			preload : false,
+			scrolling : false
 		},
-		href:'pages/'+page.url,
-		title:page.title,
-		beforeShow : load.close
+		href:page.url,
+		title:page.title
+		,beforeShow : function(){
+			load.close();
+			if (typeof pauseGame !== 'undefined') pauseGame();
+			//pauseGame();
+		}
+		,beforeClose : function(){
+			if (typeof resumeGame !== 'undefined') resumeGame();
+		}
 	});
  }
  
@@ -314,7 +326,7 @@ function checkError(response){
 }
 
 function action(inputAction,inputData,callback){
-	return $.post('lib/action.php',{action:inputAction,data:inputData},function(response){
+	cb = function(response){
 		if (response.error){
 			if (response.error.code == 1001 || response.error.code == 1002 || response.error.code == 1003) {
 				$('.appriseOverlay,.appriseOuter').remove();
@@ -337,9 +349,10 @@ function action(inputAction,inputData,callback){
 			console.log(response.error );
 			unLoad();
 		} else {
-			callback(response);
+			if (callback) callback(response);
 		}
-	},'json');
+	};
+	return $.post('lib/action.php',{action:inputAction,data:inputData},cb,'json');
 }
 
 function defaultFor(arg, val) { return typeof arg !== 'undefined' ? arg : val; }

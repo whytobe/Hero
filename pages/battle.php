@@ -33,7 +33,10 @@
 	<div id="battleResult" class="scrolling" style="padding:10px;height:300px;border:1px solid #FFA81E ;border-radius: 10px;">
 		
 	</div>
-	<button id="attack_button" onclick="battle.attack(0)">attack</button>
+	<div class="skillZone">
+		<button id="attack_button" onclick="battle.attack(0)">attack</button>
+	</div>
+	
 	<audio id="battleHandle" style="display: none;"></audio>
 
 </div>

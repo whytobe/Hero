@@ -28,14 +28,21 @@ function login(){
 
 
 function logon(data){
-	//if (!data.error){
-		
-		location.href = 'main.html';
-	/*} else {
+	console.log(data);
+	if (!data.error){
+		if (data.newCharacter == true){
+			page = new Object();
+			page.url = 'newCharacter.php';
+			page.title ='สร้างตัวละคร';
+			openPage(page,null);
+		} else {
+			parent.location.href = 'main.html';
+		}
+	} else {
 		console.log(response.error );
 		load.show('เกิดข้อผิดพลาด! ชื่อผู้ใช้ และ/หรือรหัสผ่านไม่ถูกต้อง<br/> กรุณาลองใหม่อีกครั้ง<br/>');
 		unLoad();
-	}*/
+	}
 }
 
 

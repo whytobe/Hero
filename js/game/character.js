@@ -91,7 +91,10 @@ function Character(character_model,isMe){
 	this.setSprite = function(){
 		this.model.css('background-position','-'+((this.direction*CHAR.size*3)+(this.step*CHAR.size))+'px 0');
 	}
-	
+	this.chat = function(text){
+		this.model.find('.chat').remove();
+		chatText = $('<span class="chat"><table><tr><td nowrap>'+text+'</td></tr></table></span>').appendTo(this.model).delay(5000).fadeOut(function(){$(this).remove()});
+	}
 	this.clear = function(){
 		this.model.fadeOut('slow',function(){$(this).remove()});
 		if (typeof this.contextMenu !== 'undefined') this.contextMenu.remove();
