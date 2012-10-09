@@ -1,6 +1,8 @@
 <?php
 	function sendChat($data){
-		$chat_text = strip_tags($data[text]);
+		echo $chat_text = strip_tags($data[text]);
+		//$chat_text = addslashes($chat_text);
+		//$chat_text = preg_replace ( "'<[^>]+>'U", "", $data[text]);
 		if ($chat_text != ''){
 			$insert = new Inserter();
 			$insert->table ='chat';
@@ -15,15 +17,17 @@
 		
 		if (isset($_SESSION[chat_id])) {
 			$read = new Reader();
-			$read->commandText = 'select chat_id,chat_text,chat.character_id from chat,characters where characters.character_id = chat.character_id and map_id like \''.substr(myUser('map_id'), 0,6).'%\' and chat_id > '.$_SESSION[chat_id].' and chat.character_id != '.myUser('character_id').' order by chat_id';
+			$read->commandText = 'select chat_id,chat_text,chat.character_id,chat.created_date from chat,characters where characters.character_id = chat.character_id and map_id like \''.substr(myUser('map_id'), 0,6).'%\' and chat_id > '.$_SESSION[chat_id].' and chat.character_id != '.myUser('character_id').' order by chat_id';
 			//if ($read->hasRow()){
+				$hasRow = false;
 				$result = new Result();
 				while ($db = $read->read()){
 					$result->set[chat][] = $db;
 					$_SESSION[chat_id] = $db[chat_id];
+					$hasRow = true;
 				}
 				$read->free();
-				$result->returnData();
+				if ($hasRow) $result->returnData();
 			//} 
 		} else {
 			$read = new Reader();

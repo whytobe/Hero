@@ -46,13 +46,13 @@
 				$('#char_type').css({'background-image':'url(img/char/char_'+$('#char_type').attr('type')+'.png)'});
 			}
 			function prevCharacter(){
-				nextChar = $('#char_type').attr('type') -1;
+				nextChar = parseInt($('#char_type').attr('type')) -1;
 				if (nextChar < 0) nextChar = 38;
 				$('#char_type').attr('type',nextChar%39);
 				changeCharacter();
 			}
 			function nextCharacter(){
-				nextChar = $('#char_type').attr('type') +1;
+				nextChar = parseInt($('#char_type').attr('type')) +1;
 				if (nextChar > 38) nextChar = 0;
 				$('#char_type').attr('type',nextChar%39);
 				changeCharacter();
@@ -64,7 +64,7 @@
 			$(document).ready(function(){
 				randomCharacter();
 				$('#createChar').on('click',function(){
-					action('newCharacter',{character_name:$('#character_name').val()},logon);
+					action('newCharacter',{character_name:$('#character_name').val(),character_type:$('#char_type').attr('type')},logon);
 				});
 				$('.nav').on('click',function(){
 					if ($(this).attr('type') == 'prev'){

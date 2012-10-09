@@ -105,6 +105,15 @@ td.vit-table:hover{	background-color:#93F;}
     position: absolute;
     margin-top: -70px;
     padding: 0 5px;
+    min-width:40px;
+}
+.Character .chat *{
+	width:100%;
+	text-align:center;
+}
+
+.Character .chat.mine *{
+	color:#fc0;
 }
 /*-----------------------------------------------------------------------------*/
 /*------------------------- End Status Style -------------------------*/

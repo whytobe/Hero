@@ -47,14 +47,15 @@
 					<a onclick="menu('item')" title="อุปกรณ์และของใช้" class="openBox"><img class="userbaricon" src="img/icon/equip.png" width="35px" height="35px" title="header=[Equipments] body=[เปิดหน้าต่างสวมใส่อุปกรณ์]" /></a>
 					<!--<a href="data/item.php" title="หน้าต่างไอเท็ม" class="openBox"><img class="userbaricon" src="img/icon/item.png" width="35px" height="35px" title="header=[Items] body=[เปิดหน้าต่างไอเท็ม ที่มีอยู่ในกระเป๋าเดินทาง]" /></a>-->
 					<a onclick="menu('skill')" title="ความสามารถของตัวละคร" class="openBox"><img class="userbaricon" src="img/icon/skill.png" width="35px" height="35px" title="header=[Skills] body=[เปิดหน้าต่างแสดงความสามารถพิเศษ]" /></a>
-					<a id='chatbutton'><img class="userbaricon" src="img/icon/chat.png" width="35px" height="35px" title="header=[เปิด/ปิด หน้าต่าง Chat] body=[กดเพื่อซ่อน หรือแสดงหน้าต่างสนทนา]" alt="chat" /></a>
+					<a id='chatbutton' onclick="showChatBox();"><img class="userbaricon" src="img/icon/chat.png" width="35px" height="35px" title="header=[เปิด/ปิด หน้าต่าง Chat] body=[กดเพื่อซ่อน หรือแสดงหน้าต่างสนทนา]" alt="chat" /></a>
 	                <a href="logout.php?action=logout"><img class="userbaricon" src="img/icon/exit.png" width="35px" height="35px" title="header=[ออกจากระบบ] body=[สิ้นสุดการเดินทางของวันนี้]" /></a>
 	                
 				</div>
 			</div>
 		</div>
         <div id="contextCanvas"></div>
-        <div id="chatBox"><input type="text" id="chat_text"/></div>
+        <div id="chatBox"><input type="text" id="chat_text" placeholder="พิมพ์ข้อความที่ต้องการพูด..." maxlength="140"/></div>
+        <div id="chat_list"><div id="chat_content"></div></div>
 		<audio id="soundHandle" style="display: none;"></audio>
         <!--<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>-->
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.8.0.min.js"><\/script>')</script>
@@ -64,8 +65,9 @@
         <script src="js/hero.js"></script>
 		<script type="text/javascript">
 			$(document).ready(function(){
+				
 				$(document).on('keypress',function(e){
-					console.log(e.keyCode);
+					//console.log(e.keyCode);
 					switch(e.keyCode){
 						case 13 :
 							$('#chatBox').toggle();
@@ -74,7 +76,9 @@
 							break;
 					}
 				});
+				
 			});
+
 		</script>
         <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. 
         <script>

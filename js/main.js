@@ -8,14 +8,17 @@ $.getScript = function(url, callback, cache){
   });
 };
 $.getScript("js/tools.js",null,true);
-$.getScript("js/vendor/jquery-ui-1.8.23.custom.min.js",null,true);
+$.getScript("js/vendor/jquery-ui-1.8.23.custom.min.js",function(){
+	$('#chat_list').draggable().resizable();
+},true);
 $.getScript("js/jquery.mousewheel.min.js",null,true);
-$.getScript("js/jquery.mCustomScrollbar.js",null,true);
+$.getScript("js/jquery.mCustomScrollbar.js",function(){
+	$('#chat_content').mCustomScrollbar();
+},true);
 $.getScript("js/jquery.contextMenu.js",null,true);
 $.getScript("js/fancybox/jquery.fancybox.js?v=2.1.0",null,true);
 $.getScript("js/apprise-1.5.full.js",null,true);
 $.getScript("js/game/error.js",null,true);
-
 $.getScript("js/moment.min.js",function(){$.getScript("js/th.js",function(){moment.lang('th');},true);},true);
 
 function login(){

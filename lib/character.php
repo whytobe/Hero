@@ -125,9 +125,9 @@
 	function getItem($drop_rate){
 		if ($drop_rate){
 			$result = new Result();
-			$drop = rand(0,100);
+			//$drop = rand(0,100);
 			foreach ($drop_rate as $key => $value) {
-				if ($drop <= $value){
+				if (rand(0,100) <= $value){
 					if ($this->existItem($key)){
 						$insert = new Inserter();
 						$insert->table = 'character_item';
@@ -252,7 +252,7 @@
 		function getCharacters(){
 			$reader = new Reader();
 			///character_last_active > now() - 300 and
-			$reader->commandText = 'select character_id,character_name,map_id,character_active,character_last_active from characters,member where member.member_id = characters.member_id and substr(map_id,8) not in(select map_position from map_event where map_id = \''.substr($this->character[map_id], 0,6).'\') and map_id like \''.substr($this->character[map_id], 0,6).'%\' and character_id != '.$this->character[character_id];
+			$reader->commandText = 'select character_id,character_name,map_id,character_active,character_type,character_last_active from characters,member where character_last_active > now() - 300 and member.member_id = characters.member_id and substr(map_id,8) not in(select map_position from map_event where map_id = \''.substr($this->character[map_id], 0,6).'\') and map_id like \''.substr($this->character[map_id], 0,6).'%\' and character_id != '.$this->character[character_id];
 			if ($reader->hasRow()){
 				$result = new Result();
 				while ($db = $reader->read()){

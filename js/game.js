@@ -28,6 +28,15 @@ function handle(response){
 		requestBattle = false;
 	} 
 }
+
+function showChatBox(){
+	$('#chat_list').toggle();
+	if ($('#chat_list:visible').length > 0){
+		$('#chat_content').mCustomScrollbar('update');
+		$('#chat_content').mCustomScrollbar("scrollTo","bottom");
+	}
+}
+
 function loadUserBar(){
 	preLoad('#user_bar');
 	refreshData.refreshUserBar = true;
@@ -98,14 +107,16 @@ function gotMap(response){
 }
 function sendChat(chat_text){
 	if (chat_text != ''){
-		me.chat(chat_text);
-		action('sendChat',{text:chat_text},null);
+		me.chat(chat_text,new Date());
+		action('sendChat',{text:chat_text});
 	}
 }
 function gotChat(response){
 	$.each(response, function(index,chat) {
-		if (typeof Char[parseInt(chat.character_id)] !== 'undefined') Char[parseInt(chat.character_id)].chat(chat.chat_text);
-		else if (typeof Char[chat.character_id] !== 'undefined') Char[chat.character_id].chat(chat.chat_text);
+		toJSTime = new Date(chat.created_date.replace(/-/g,'/'));
+		//console.log(chat.created_date.replace(/-/g,'/'));
+		if (typeof Char[parseInt(chat.character_id)] !== 'undefined') Char[parseInt(chat.character_id)].chat(chat.chat_text,toJSTime);
+		else if (typeof Char[chat.character_id] !== 'undefined') Char[chat.character_id].chat(chat.chat_text,toJSTime);
 		else {console.log('unknown character chat');console.log(chat);};
 	});
 }

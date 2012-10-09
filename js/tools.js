@@ -326,33 +326,34 @@ function checkError(response){
 }
 
 function action(inputAction,inputData,callback){
-	cb = function(response){
-		if (response.error){
-			if (response.error.code == 1001 || response.error.code == 1002 || response.error.code == 1003) {
-				$('.appriseOverlay,.appriseOuter').remove();
-				apprise('เกิดข้อผิดพลาด! กรุณาลองใหม่อีกครั้ง<br/>'+ errorMsg[response.error.code].title  +', '+errorMsg[response.error.code].description,{'verify':true}, function(r) {
-					if (r) {
-						var index = location.href.lastIndexOf("/") + 1;
-						var filename = location.href.substr(index);
-						if (filename != 'index.html')location.href = 'index.html';
-						else {
-							$('#member_password').html('').select().focus();							
+	return $.post('lib/action.php',{action:inputAction,data:inputData},function(response){
+		if (response){
+			if (response.error){
+				if (response.error.code == 1001 || response.error.code == 1002 || response.error.code == 1003) {
+					$('.appriseOverlay,.appriseOuter').remove();
+					apprise('เกิดข้อผิดพลาด! กรุณาลองใหม่อีกครั้ง<br/>'+ errorMsg[response.error.code].title  +', '+errorMsg[response.error.code].description,{'verify':true}, function(r) {
+						if (r) {
+							var index = location.href.lastIndexOf("/") + 1;
+							var filename = location.href.substr(index);
+							if (filename != 'index.html')location.href = 'index.html';
+							else {
+								$('#member_password').html('').select().focus();							
+							}
+	 
+						}else{
+							window.close();
 						}
- 
-					}else{
-						window.close();
-					}
-				});
+					});
+				} else {
+					load.update('เกิดข้อผิดพลาด! กรุณาลองใหม่อีกครั้ง<br/>'+ errorMsg[response.error.code].title  +', '+errorMsg[response.error.code].description);
+				}
+				console.log(response.error );
+				unLoad();
 			} else {
-				load.update('เกิดข้อผิดพลาด! กรุณาลองใหม่อีกครั้ง<br/>'+ errorMsg[response.error.code].title  +', '+errorMsg[response.error.code].description);
+				if (typeof callback !== 'undefined') callback(response);
 			}
-			console.log(response.error );
-			unLoad();
-		} else {
-			if (callback) callback(response);
 		}
-	};
-	return $.post('lib/action.php',{action:inputAction,data:inputData},cb,'json');
+	},'json');
 }
 
 function defaultFor(arg, val) { return typeof arg !== 'undefined' ? arg : val; }

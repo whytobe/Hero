@@ -65,6 +65,7 @@
 			$insert = new Inserter();
 			$insert->table = 'characters';
 			$insert->set[character_name] = $data[character_name];
+			$insert->set[character_type] = $data[character_type];
 			$insert->set[member_id] = $_SESSION[member][member_id];
 			$insert->execute();
 			memberLogin($_SESSION[member]);

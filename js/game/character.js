@@ -19,7 +19,7 @@ function Character(character_model,isMe){
 	this.position = character_model.map_id.substr(7);
 	this.updatePosition = this.position;
 	this.name = character_model.character_name;
-	this.type = 1;//character_model.type;
+	this.type = character_model.character_type;
 	this.offset = offsetFromPosition(this.position);
 	this.direction = CHAR.direction.DOWN;
 	this.step = 1;
@@ -33,6 +33,7 @@ function Character(character_model,isMe){
 	this.isMe = (typeof isMe !== 'undefined')? isMe : false;
 	
 	this.model = (this.isMe)? $('<div class="Character me"/>') : $('<div class="Character"/>');
+	this.model.css({'background-image':'url(img/char/char_'+this.type+'.png)'});
 	//this.model = $('<div id="char_'+this.id+'" class="Character"/>');
 	this.model.css({
 		top : this.offset.top + 'px',
@@ -91,9 +92,15 @@ function Character(character_model,isMe){
 	this.setSprite = function(){
 		this.model.css('background-position','-'+((this.direction*CHAR.size*3)+(this.step*CHAR.size))+'px 0');
 	}
-	this.chat = function(text){
+	this.chat = function(text,time){
 		this.model.find('.chat').remove();
-		chatText = $('<span class="chat"><table><tr><td nowrap>'+text+'</td></tr></table></span>').appendTo(this.model).delay(5000).fadeOut(function(){$(this).remove()});
+		chatText = $('<span class="chat '+((this.id == me.id) ? 'mine' : '')+'"><table><tr><td nowrap>'+text+'</td></tr></table></span>');
+		chatText.appendTo(this.model).delay(5000).fadeOut(function(){$(this).remove()});
+		timeText = time.toLocaleTimeString()
+		chatList = $('<div '+((this.id == me.id) ? 'class="mine"' : '')+'/>').html('['+timeText+'] '+this.name+' : '+ text );
+		chatList.appendTo('#chat_content .mCSB_container').delay(60000).fadeOut(function(){$(this).remove()});
+		$('#chat_content').mCustomScrollbar('update');
+		$('#chat_content').mCustomScrollbar("scrollTo","bottom");
 	}
 	this.clear = function(){
 		this.model.fadeOut('slow',function(){$(this).remove()});
