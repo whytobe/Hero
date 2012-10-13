@@ -114,9 +114,9 @@
 	
 	function existItem($item_id){
 		$read = new Reader();
-		$read->commandText = 'select character_item_id,item_type,item_count from character_item,item where character_item.item_id = item.item_id and character_item.item_id = '.$item_id.' and character_id = '.$this->character[character_id];
-		if ($db = $read->read()){
-			return ($db[item_type] != '2')? false : true;
+		$read->commandText = 'select character_item_id,item_id from character_item where character_item.item_id = '.$item_id.' and character_id = '.$this->character[character_id];
+		if ($read->hasRow()){
+			return true;
 		} else {
 			return false;
 		}
@@ -125,10 +125,16 @@
 	function getItem($drop_rate){
 		if ($drop_rate){
 			$result = new Result();
+			$read = new Reader();
+			$read->commandText = 'select item_id from character_item where substr(item_id,0,1) <> 2 and item_sale = 0 and item_active = 0 and character_id = '.$this->character[character_id];
+			$myitem = '';
+			while ($db = $read->read()){
+				$myitem .= $db[item_id];
+			}
 			//$drop = rand(0,100);
 			foreach ($drop_rate as $key => $value) {
 				if (rand(0,100) <= $value){
-					if ($this->existItem($key)){
+					if (strpos($myitem, $key) === false){
 						$insert = new Inserter();
 						$insert->table = 'character_item';
 						$insert->set[character_id] = $this->character[character_id];
@@ -141,7 +147,7 @@
 						$update->set[item_count] = 'item_count + 1';
 						$update->where[character_id] = $this->character[character_id];
 						$update->where[item_id] = $key;
-						echo $update->commandText;
+						//echo $update->commandText;
 						$update->execute();
 					}
 					
@@ -166,6 +172,10 @@
 			$levelup = true;
 		} 
 		$this->updateStatus();
+		if ($levelup) {
+			$this->character[character_pulse] = $this->character[character_max_pulse];
+			$this->character[character_soul] = $this->character[character_max_soul];
+		}
 		$this->save();
 		return $levelup;
 		
@@ -224,7 +234,17 @@
 			unset($data->set[character_online_unique]);
 			$data->execute();
 		}
-			
+		
+		function getMySkill(){
+			$reader = new Reader();
+			$reader->commandText = 'select skill.skill_id,skill_lv,skill_name,skill_ability from skill,character_skill where character_skill.skill_id = skill.skill_id and character_skill.character_id = '.myUser('character_id');
+			$result = new Result();
+			while ($db = $reader->read()){
+				$result->set[skill][$db[skill_id]] = $db;
+			}
+			$result->returnData();
+		}
+		
 		function login(){
 			
 			//echo $data->commandText;

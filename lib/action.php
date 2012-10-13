@@ -67,6 +67,7 @@ function initGame($data){
 	$myUser = $_SESSION[USER];
 	$myUser->initialCharacter();
 	$myUser->getCharInfo();
+	$myUser->getMySkill();
 	getMapInfo();
 }
 

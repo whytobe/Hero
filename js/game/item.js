@@ -7,8 +7,10 @@ function showItem(items){
 	unLoad();
 	clearItem();
 	clearDetail();
+	
 	$.each(items, function(index, item) {
 		if (item.item_active == "0"){
+			console.log(item);
 			itemImg = $('<img class="item-icon" />').attr('src','img/item/'+item.item_id+'.png').attr('title',item.item_name+' - '+item.item_count+' ชิ้น');
 			itemCount = $('<div class="item-num"/>').html(item.item_count);
 			itemHtml = $('<div class="item-icon" />').attr('id',item.character_item_id);

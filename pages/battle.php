@@ -1,10 +1,10 @@
 <?php
     
 ?>
-<div style="width:800px;height:600px;">
-	<!--<div>การต่อสู้ระหว่าง <span id="myCharacter"></span> กับ .... <span id="enemy"></span> </div>-->
+<div style="width:800px;height:600px;" id='battle_box'>
 	<div id="battle_info">
 		<div id="my_info">
+			<div class="myEffect"></div>
 			<div class="photo">player / monster img</div>
 			<div class="powerBar">
 				<span class='pulse long' ><div class="pulse_indicator indicator" ></div></span>
@@ -15,10 +15,8 @@
 			<div>ระดับ : <span class="level"></span></div>
 			<div>ชื่อเสียง : <span class="fame"></span></div>
 		</div>
-		<div id="battle_stage">
-			
-		</div>
 		<div id="enemy_info">
+			<div class="enemyEffect"></div>
 			<div class="photo">player / monster img</div>
 			<div class="powerBar">
 				<span class='pulse long' ><div class="pulse_indicator indicator" ></div></span>
@@ -30,13 +28,9 @@
 		</div>
 	</div>
 	<div class="break"></div>
-	<div id="battleResult" class="scrolling" style="padding:10px;height:300px;border:1px solid #FFA81E ;border-radius: 10px;">
-		
+	<div class="skillZone"></div>
+	<div id="battleResult" class="scrolling" >	
 	</div>
-	<div class="skillZone">
-		<button id="attack_button" onclick="battle.attack(0)">attack</button>
-	</div>
-	
 	<audio id="battleHandle" style="display: none;"></audio>
 
 </div>

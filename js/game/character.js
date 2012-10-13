@@ -27,6 +27,7 @@ function Character(character_model,isMe){
 	this.currentPosition = null;
 	this.moveStep = 1;
 	this.active = true;
+	this.skill = null;
 	console.log('Inittial Character : '+this.name +' @position : '+this.position);
 	
 	// Prepare Character Model.
@@ -56,7 +57,7 @@ function Character(character_model,isMe){
 						console.log('showContextMenu');
 						switch(request){
 							case 'request' :
-								load.show();
+								load.update('นายน้อยกรุณารอสักครู่,<br/> ข้าน้อยกำลังส่งคำร้องไปยังคู่ต่อสู้<br/><br/><button id="cancleRequest" onclick="refreshData.battle = new Object();refreshData.battle.response = false;load.close();requestBattle = false;">ยกเลิก</button>',{button:false});
 								refreshData.battle = new Object();
 								refreshData.battle.request = new Object();
 								refreshData.battle.request.character_id = $(el).attr('character_id');

@@ -52,9 +52,12 @@
 			$reader->commandText = 'select * from character_battle where battle_id = '.$this->battle[battle_id];
 			$db = $reader->read();
 			$this->battle = $db;
+			$reader->free();
 			$battleResult = split('-', $this->battle[battle_result]);
 			$battleCount = count($battleResult);
-			
+			if (($battleCount - $this->round) > 2 ){
+				$this->round = $battleCount;
+			}
 			for ($i = $this->round;$i<$battleCount;$i++){
 				if ($battleResult[$i]){
 					$result = new Result();
@@ -65,7 +68,7 @@
 			}
 			 
 			$this->save();
-			$reader->free();
+			
 			if ($this->battle[battle_request] == 0){
 				//Enemy Won.			
 				$this->endBattle(false);
@@ -123,9 +126,7 @@
 			if ($winner === true) {
 				$this->getMoney();
 				$this->getItem();
-				$this->getExp();
-				
-				
+				$this->getExp();				
 			} 
 			$this->clearBattleSession();
 		}
@@ -199,13 +200,20 @@
 			if ($this->battle[battle_request] == 2 && $this->delay <= microtime(true)){
 				$result = new Result();	
 				$skill = json_decode($this->mySkill[$skill_id][skill_ability]);
-				$skillmultiply = $skill->skill_damage[$this->mySkill[$skill_id][skill_lv] -1];	
+				
+				// ถ้าหากสกิลนั้นต้องการ sp ในการใช้งาน
 				if (isset($skill->skill_soul)){
 					$use_soul = $skill->skill_soul[$this->mySkill[$skill_id][skill_lv] -1];
-					myUser()->character[character_soul] -= $use_soul;
-					$result->set[result][$this->round][use_soul] = $use_soul;
-					myUser()->save();
+					if ($use_soul <= myUser('character_soul')){
+						myUser()->character[character_soul] -= $use_soul;
+						$result->set[result][$this->round][use_soul] = $use_soul;
+						myUser()->save();
+					} else {
+						$skill_id = 0;
+						$skill = json_decode($this->mySkill[$skill_id][skill_ability]);
+					}
 				}
+				$skillmultiply = $skill->skill_damage[$this->mySkill[$skill_id][skill_lv] -1];	
 				$myAtk = myUser('character_atk');
 				$enemyDef = $this->enemy('character_def');
 				
@@ -223,6 +231,7 @@
 					$result->set[result][$this->round][dmg] = 'miss';
 					$result->set[result][$this->round][type] = 'miss';
 				}	
+				$result->set[result][$this->round][skill_id] = $skill_id;
 				$result->set[result][$this->round][id] = myUser('character_id');		
 				$result->set[result][$this->round][name] = $this->mySkill[$skill_id][skill_name];
 				$result->set[result][$this->round][lv] = $this->mySkill[$skill_id][skill_lv];
@@ -252,41 +261,177 @@
 			}
 		}
 		
+		function calcDmg($magic,$attack,$skillmultiply){
+			//$skillmultiply = $skill->skill_damage[$this->mySkill[$skill_id][skill_lv] -1];
+			if ($magic == 0){
+				$myAtk = 0;
+				$enemyDef = 0;
+				if ($attack) {
+					$myAtk = myUser('character_atk');
+					$myHit = myUser('character_hit');
+					if (isset($this->monster)){
+						$enemyDef = $this->monster('monster_def'); 
+						$enemyFlee = $this->monster('monster_flee');
+					} else {
+						$enemyDef = $this->enemy('character_def');
+						$enemyFlee = $this->enemy('character_flee');
+					}
+				} else {
+					$enemyDef = myUser('character_def');
+					$enemyFlee = myUser('character_flee');
+					if (isset($this->monster)){
+						$myAtk = $this->monster('monster_atk');
+						$myHit = $this->monster('monster_hit');
+					} else {
+						$myAtk = $this->enemy('character_atk');
+						$myHit = $this->enemy('character_hit');
+					}
+				}
+					
+				$hit = $this->approx($myHit /($myHit + $enemyFlee) * 100);
+				if (rand(0, 100) < $hit){
+					$damage = $this->approx(($myAtk - $enemyDef)*$skillmultiply);
+					$damage = ($damage < 1)? 1 : ceil($damage);
+					$returnResult[dmg] = $damage;
+					$returnResult[type] = 'hit';
+				} else {
+					$returnResult[dmg] = 'miss';
+					$returnResult[type] = 'miss';
+				}	
+			}
+			return $returnResult[dmg];
+		}
 		
 		function getMonsterDamage($skill_id){
 			if ($this->battle[battle_request] == 2 && $this->delay <= microtime(true)){
 				$result = new Result();	
 				$skill = json_decode($this->mySkill[$skill_id][skill_ability]);
-				$skillmultiply = $skill->skill_damage[$this->mySkill[$skill_id][skill_lv] -1];	
-				if (isset($skill->skill_soul)){
-					$use_soul = $skill->skill_soul[$this->mySkill[$skill_id][skill_lv] -1];
-					myUser()->character[character_soul] -= $use_soul;
-					$result->set[result][$this->round][use_soul] = $use_soul;
-					myUser()->save();
-				}
-				$myAtk = myUser('character_atk');
-				$enemyDef = $this->monster('monster_def');
-				
-				$myHit = myUser('character_hit');
-				$enemyFlee = $this->monster('monster_flee');
-				
-				$hit = $this->approx($myHit /($myHit + $enemyFlee) * 100);
-				if (rand(0, 100) < $hit){
-					$damage = $this->approx(($myAtk - $enemyDef)*$skillmultiply);
-					$damage = ($damage < 1)? 1 : ceil($damage);
+
+				// ถ้าหากสกิลส่งผลต่อตนเอง
+				//print_r(json_decode($this->mySkill[1][skill_ability]));
+				if (isset($skill->my)){
+					// ถ้าหากสกิลส่งผลด้านลบ
+					if (isset($skill->my->use_attr)){
+						foreach ($skill->my->use_attr as $key => $value) {
+							$my_use_value = null;
+							$my_use_value = $value[$this->mySkill[$skill_id][skill_lv] -1];
+							//echo $use_soul ." : ".myUser('character_soul');
+							if (is_float($my_use_value) && isset(myUser()->character['character_max_'.$key])) $my_use_value = $my_use_value * myUser('character_max_'.$key);
+							$my_use_value = floor($my_use_value);
+							
+							if ($my_use_value <= myUser('character_'.$key)){
+								myUser()->character['character_'.$key] -= $my_use_value;
+								if (isset(myUser()->character['character_max_'.$key])){
+									if (myUser()->character['character_'.$key] > myUser()->character['character_max_'.$key]){
+										myUser()->character['character_'.$key] = myUser()->character['character_max_'.$key];
+										$my_use_value -= (myUser()->character['character_'.$key] - myUser()->character['character_max_'.$key]);
+									}
+								} 
+							} else {
+								$skill_id = 0;
+								$skill = json_decode($this->mySkill[$skill_id][skill_ability]);
+							}
+							$result->set[result][$this->round][my][use_attr][$key] = $my_use_value;
+						}
+					}
 					
-					$result->set[result][$this->round][dmg] = $damage;
-					$result->set[result][$this->round][type] = 'hit';
-				} else {
-					$result->set[result][$this->round][dmg] = 'miss';
-					$result->set[result][$this->round][type] = 'miss';
-				}	
+					// ถ้าหากสกิลส่งผลด้านบวก
+					if (isset($skill->my->get_attr)){
+						foreach ($skill->my->get_attr as $key => $value) {
+							$my_get_value = null;
+							$my_get_value = $value[$this->mySkill[$skill_id][skill_lv] -1];
+							//echo $use_soul ." : ".myUser('character_soul');
+							if (is_float($my_get_value) && isset(myUser()->character['character_max_'.$key])) $my_get_value = $my_get_value * myUser('character_max_'.$key);
+							$my_get_value = floor($my_get_value);
+							//echo "get $key : $my_get_value";
+							myUser()->character['character_'.$key] += $my_get_value;
+							if (isset(myUser()->character['character_max_'.$key])){
+								if (myUser()->character['character_'.$key] > myUser()->character['character_max_'.$key]){
+									$my_get_value -= myUser()->character['character_'.$key] - myUser()->character['character_max_'.$key];
+									myUser()->character['character_'.$key] = myUser()->character['character_max_'.$key];
+								}
+							} 
+							$result->set[result][$this->round][my][get_attr][$key] = $my_get_value;
+							
+						}
+					}  
+					myUser()->save();
+					
+				}
+				// หากสกิลส่งผลต่อคู่ต่อสู้
+				if (isset($skill->enemy)){
+					// ถ้าหากสกิลส่งผลด้านบวก
+					if (isset($skill->enemy->get_attr)){
+						foreach ($skill->enemy->get_attr as $key => $value) {
+							$enemy_get_value = null;
+							$enemy_get_value = $value[$this->mySkill[$skill_id][skill_lv] -1];
+							//echo $use_soul ." : ".myUser('character_soul');
+							if (is_float($enemy_get_value)) {
+								if (isset($this->monster) && isset($this->monster['monster_'.$key])) $enemy_get_value = $enemy_get_value * $this->monster('monster_'.$key);
+								else if (isset($this->enemy) && isset($this->enemy['character_max_'.$key])) $enemy_get_value = $enemy_get_value * $this->enemy('character_max_'.$key);
+								//$enemy_get_value = $enemy_get_value * ((isset($this->monster))? $this->monster('monster_'.$key) : $this->enemy('character_'.$key));
+							}
+							$my_use_value = floor($my_use_value);
+							
+							if (isset($this->monster)){
+								$this->monster['monster_'.$key] += $enemy_get_value;
+							} else {
+								$this->enemy['enemy_'.$key] += $enemy_get_value;
+							}
+							
+							if (isset($this->enemy)){
+								if (isset($this->enemy['enemy_max_'.$key])){
+									if ($this->enemy['enemy_'.$key] > $this->enemy['enemy_max_'.$key]){
+										$this->enemy['enemy_'.$key] = $this->enemy['enemy_max_'.$key];
+										$enemy_get_value -= $this->enemy['enemy_'.$key] - $this->enemy['enemy_max_'.$key];
+									}
+								} 
+							}
+							$result->set[result][$this->round][enemy][get_attr][$key] = $enemy_get_value;
+						}
+					}  
+
+					// ถ้าหากสกิลส่งผลด้านลบ
+					if (isset($skill->enemy->use_attr)){
+						foreach ($skill->enemy->use_attr as $key => $value) {
+							$enemy_use_value = null;
+							$enemy_use_value = $value[$this->mySkill[$skill_id][skill_lv] -1];
+							//echo $use_soul ." : ".myUser('character_soul');
+							if (!is_float($enemy_use_value)) {
+								//$enemy_get_value = $enemy_get_value * ((isset($this->monster))? $this->monster('monster_'.$key) : $this->enemy('character_'.$key));
+								if (isset($this->monster)){
+									$this->monster['monster_'.$key] -= $enemy_use_value;
+								} else {
+									$this->enemy['enemy_'.$key] -= $enemy_use_value;
+								}
+							} else {
+								$enemy_use_value = $this->calcDmg($this->mySkill[$skill_id][skill_type],true, $enemy_use_value);
+								if (isset($this->monster)){
+									$this->monster['monster_'.$key] -= $enemy_use_value;
+								} else {
+									$this->enemy['enemy_'.$key] -= $enemy_use_value;
+								}
+							}							
+							if (isset($this->enemy)){
+								if (isset($this->enemy['enemy_max_'.$key])){
+									if ($this->enemy['enemy_'.$key] > $this->enemy['enemy_max_'.$key]){
+										$this->enemy['enemy_'.$key] = $this->enemy['enemy_max_'.$key];
+										$enemy_use_value -= $this->enemy['enemy_'.$key] - $this->enemy['enemy_max_'.$key];
+									}
+								} 
+							}
+							$result->set[result][$this->round][enemy][use_attr][$key] = $enemy_use_value;
+						}
+					}
+				}
+				if (isset($skill->attack_count)) $result->set[result][$this->round][attack_count] = $skill->attack_count;
+				$result->set[result][$this->round][skill_id] = $skill_id;
 				$result->set[result][$this->round][id] = myUser('character_id');		
 				$result->set[result][$this->round][name] = $this->mySkill[$skill_id][skill_name];
 				$result->set[result][$this->round][lv] = $this->mySkill[$skill_id][skill_lv];
 				$result->returnData();
 				
-				$this->monster['monster_pulse'] = $this->monster['monster_pulse'] - $result->set[result][$this->round][dmg];
+				
 				$updater = new Updater();
 				$updater->table = 'character_battle';
 				//$result->set[result][$this->round][s_id] = $skill_id;
@@ -306,35 +451,89 @@
 				while ($this->monster_delay < $microtime) {
 				//for ($now  = $this->monster_delay; $now < $microtime; $now = +$this->monster[monster_atk_delay] ) {
 					$result = new Result();	
-					$monsterAttackSkill = 0;
-					$monsterSkillLevel = 1;
-					$skill = json_decode($this->monster_skill[$monsterAttackSkill][skill_ability]);
-					$skillmultiply = $skill->skill_damage[$monsterSkillLevel  -1];	
-					
-					$myAtk = $this->monster('monster_atk');
-					$enemyDef = myUser('character_def');
-					
-					$myHit = $this->monster('monster_hit');
-					$enemyFlee =  myUser('character_flee');
-					
-					$hit = $this->approx($myHit /($myHit + $enemyFlee) * 100);
-					if (rand(0, 100) < $hit){
-						$damage = $this->approx(($myAtk - $enemyDef)*$skillmultiply);
-						$damage = ($damage < 1)? 1 : ceil($damage);
+					$skill_id = 0;
+					$skill_level = 1;
+					$skill = null;
+					$skill = json_decode($this->monster_skill[$skill_id][skill_ability]);
+					//print_r($skill);
+					if (isset($skill->my)){
+						// ถ้าหากสกิลส่งผลด้านลบ
+						if (isset($skill->my->use_attr)){
+							foreach ($skill->my->use_attr as $key => $value) {
+								$my_use_value = $value[$skill_level-1];
+								//echo $use_soul ." : ".myUser('character_soul');
+								if (is_float($my_use_value)) $my_use_value = $my_use_value * $this->monster['monster_'.$key];
+								$my_use_value = floor($my_use_value);
+								
+								$this->monster['monster_'.$key] -= $my_use_value;
+								
+								$result->set[result][$this->round][enemy][use_attr][$key] = $my_use_value;
+							}
+						}
 						
-						$result->set[result][$this->round][dmg] = $damage;
-						$result->set[result][$this->round][type] = 'hit';
-					} else {
-						$result->set[result][$this->round][dmg] = 'miss';
-						$result->set[result][$this->round][type] = 'miss';
-					}	
+						// ถ้าหากสกิลส่งผลด้านบวก
+						if (isset($skill->my->get_attr)){
+							foreach ($skill->my->get_attr as $key => $value) {
+								$my_get_value = $value[$skill_level-1];
+								//echo $use_soul ." : ".myUser('character_soul');
+								if (is_float($my_get_value) ) $my_get_value = $my_get_value * $this->monster['monster_'.$key];
+								$my_use_value = floor($my_use_value);
+								//echo "get $key : $my_get_value";
+								$this->monster['monster_'.$key] += $my_get_value;
+								$result->set[result][$this->round][enemy][get_attr][$key] = $my_get_value;
+								
+							}
+						}  						
+					}
+					// หากสกิลส่งผลต่อคู่ต่อสู้
+					if (isset($skill->enemy)){
+						// ถ้าหากสกิลส่งผลด้านบวก
+						if (isset($skill->enemy->get_attr)){
+							foreach ($skill->enemy->get_attr as $key => $value) {
+								$enemy_get_value = $value[$skill_level -1];
+								//echo $use_soul ." : ".myUser('character_soul');
+								if (is_float($enemy_get_value)) {
+									 $enemy_get_value = $enemy_get_value * myUser('character_max_'.$key);
+								}
+								$enemy_get_value = floor($enemy_get_value);
+								
+								myUser()->character['character_'.$key] += $enemy_get_value;
+								if (isset(myUser()->character['character_max_'.$key])){
+									if (myUser()->character['character_'.$key] > myUser()->character['character_max_'.$key]){
+										myUser()->character['character_'.$key] = myUser()->character['character_max_'.$key];
+										$enemy_get_value -= myUser()->character['character_'.$key] - myUser()->character['character_max_'.$key];
+									}
+								} 
+								
+								$result->set[result][$this->round][my][get_attr][$key] = $enemy_get_value;
+							}
+						}  
+	
+						// ถ้าหากสกิลส่งผลด้านลบ
+						if (isset($skill->enemy->use_attr)){
+							foreach ($skill->enemy->use_attr as $key => $value) {
+								$enemy_use_value = $value[$skill_level -1];
+								//echo $use_soul ." : ".myUser('character_soul');
+								if (!is_float($enemy_use_value)) {
+									//$enemy_get_value = $enemy_get_value * ((isset($this->monster))? $this->monster('monster_'.$key) : $this->enemy('character_'.$key));
+									myUser()->character['character_'.$key] -= $enemy_use_value;
+								} else {
+									$enemy_use_value = $this->calcDmg($this->monster_skill[$skill_id][skill_type],false, $enemy_use_value);
+									if ($enemy_use_value != 'miss'){
+										myUser()->character['character_'.$key] -= $enemy_use_value;
+									}
+								}							
+								$result->set[result][$this->round][my][use_attr][$key] = $enemy_use_value;
+							}
+						}
+					}
+					if (isset($skill->attack_count)) $result->set[result][$this->round][attack_count] = $skill->attack_count;
+					$result->set[result][$this->round][skill_id] = $skill_id;
 					$result->set[result][$this->round][id] = 'm';//myUser('character_id');		
-					$result->set[result][$this->round][name] = $this->monster_skill[$monsterAttackSkill][skill_name];
-					$result->set[result][$this->round][lv] = $monsterSkillLevel;
+					$result->set[result][$this->round][name] = $this->monster_skill[$skill_id][skill_name];
+					$result->set[result][$this->round][lv] = $skill_level;
 					$result->returnData();
 					
-					myUser()->character['character_pulse'] = myUser()->character['character_pulse'] - $result->set[result][$this->round][dmg];
-					myUser()->save();
 					$updater = new Updater();
 					$updater->table = 'character_battle';
 					//$result->set[result][$this->round][s_id] = $skill_id;

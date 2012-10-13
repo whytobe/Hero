@@ -65,23 +65,24 @@
 
 #battle_info #my_info{
 	float:left;	
-	width:160px;
+	width:330px;
 	height:200px;
-	/*border-right:1px solid #00f;
-	border-top:1px solid #00f;*/
-	margin:10px 0;
-	padding:20px 10px 10px;
+	padding:50px 20px;
+	border-right:1px solid #00f;
+	border-top:1px solid #00f;
+	border-bottom:1px solid #00f;
 	text-align:left;
 }
 
 #battle_info #enemy_info{
 	float:right;
-	width:160px;
+	width:330px;
 	height:200px;
-	/*border-left:1px solid #f00;
-	border-top:1px solid #f00;*/
-	margin:10px 0;
-	padding:20px 10px 10px;
+	padding:50px 20px;
+	border-left:1px solid #f00;
+	border-top:1px solid #f00;
+	border-bottom:1px solid #f00;
+
 	text-align:right;
 }
 
@@ -104,4 +105,33 @@
 #battle_info .powerBar{
 	line-height: 8px;
     margin-top: 10px;
+}
+#battleResult{
+	padding:10px;height:150px;
+}
+.effect,.myEffect,.enemyEffect{
+    position: absolute;
+}
+
+.skillZone{
+	text-align:center;
+}
+
+#my_info .dmgShow{
+	font-size:2em;width:50px;margin-left:250px;margin-top:50px;position:absolute
+}
+
+#enemy_info .dmgShow{
+	font-size:2em;width:50px;margin-right:250px;margin-top:50px;position:absolute
+}
+
+.dmgShow.miss{
+	color:#cbcbcb;
+}
+
+.dmgShow.use{
+	color:#f00;
+}
+.dmgShow.get{
+	color:#0f0;
 }

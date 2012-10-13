@@ -48,6 +48,9 @@
 		
 		$backpackSkill = array(
 			0=>1, // หมัดเปล่าระดับ 1
+			1=>1,
+			2=>1,
+			3=>1
 		);
 		foreach ($backpackSkill as $key => $value) {
 			$insert = new Inserter();

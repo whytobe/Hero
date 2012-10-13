@@ -22,13 +22,16 @@ function handle(response){
 	if (response.item_detail) itemDetail(response.item_detail); // Show item detail.
 	if (response.status) showStatus(response.status); // Show status detail.
 	if (response.chat) gotChat(response.chat);
+	if (response.skill) gotSkill(response.skill);
 	if (waitForBattle && !response.notice){
-		load.update('คู่ต่อสู้ได้ปฏิเสธการต่อสู้ หรือไม่ตอบรับในเวลาที่กำหนด');
+		load.update('ยกเลิกการต่อสู้เนื่องจาก<br/>คู่ต่อสู้ได้ปฏิเสธการต่อสู้ ยกเลิกคำร้องหรือไม่ตอบรับในเวลาที่กำหนด');
 		waitForBattle = false;
 		requestBattle = false;
 	} 
 }
-
+function gotSkill(response){
+	if (typeof me !== 'undefined') me.skill = response;
+}
 function showChatBox(){
 	$('#chat_list').toggle();
 	if ($('#chat_list:visible').length > 0){
@@ -215,7 +218,7 @@ function noticeBattle(notice){
 					}
 				} else if (notice.battle.request){
 					waitForBattle = true;
-					load.show();
+					load.update('นายน้อยกรุณารอสักครู่,<br/> ข้าน้อยกำลังส่งคำร้องไปยังคู่ต่อสู้<br/><br/><button id="cancleRequest" onclick="refreshData.battle = new Object();refreshData.battle.response = false;load.close();requestBattle = false;">ยกเลิก</button>',{button:false});
 				} else if (notice.battle.start) {
 					battle = new Battle();
 					if (notice.battle.enemy) battle.enemy = notice.battle.enemy;

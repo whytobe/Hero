@@ -8,10 +8,14 @@
 
 	session_start();
 	header('Content-type: application/json');
-	header('charset=utf-8');
-	print_r($_SESSION);
+	//header('charset=utf-8');
+	$insert = new Inserter();
+	$insert->table = 'characters';
+	$insert->set[character_name] = 'newcha';
+	
+	//print_r($_SESSION);
 	//unset($_SESSION[battle]);
 	//echo microtime(true);
 	//echo substr('test', 0,-1)
-	echo myUser()->maxExp();
+	//echo myUser()->maxExp();
 ?>

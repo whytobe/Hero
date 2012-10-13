@@ -65,16 +65,16 @@ function loadCharacterScript(){
 		    closer: false,
 		    sticker: false
 	    });
-	    
+	    $.getScript("js/game/battle.js",null,enableCache);
+    	$.getScript("js/game/item.js",null,enableCache);
+    	$.getScript("js/game/skill.js",null,enableCache);
+    	$.getScript("js/game/status.js",null,enableCache);
+    	$.getScript("js/game/poem.js",null,enableCache);
 	    action('initGame',null,function(response){
 	    	$.pnotify_remove_all(); // Clear all notification.
 	    	handle(response);
 	    	refreshGame();
-	    	$.getScript("js/game/battle.js",null,enableCache);
-	    	$.getScript("js/game/item.js",null,enableCache);
-	    	$.getScript("js/game/skill.js",null,enableCache);
-	    	$.getScript("js/game/status.js",null,enableCache);
-	    	$.getScript("js/game/poem.js",null,enableCache);
+	    	
 	    });
 	},enableCache);
 }
