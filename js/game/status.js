@@ -10,6 +10,7 @@ function showStatus(response){
 			$('#stat_info .'+index).parent().append('<span class="pointInfo">('+Math.ceil(value/10)+')</span>');
 		}
 	});
+	$('#stat_info .photo').css({'background-image':'url(http://graph.facebook.com/'+me.character_model.facebook_id+'/picture?type=square)','background-size':'100% auto','background-position':'center center','background-repeat':'no-repeat'}).html('');
 	me.character_model.character_atk_delay = response.character_atk_delay;
 	me.character_model.character_matk_delay = response.character_matk_delay;
 	checkPoint = ["character_str","character_agi","character_vit","character_int","character_dex","character_luk"];

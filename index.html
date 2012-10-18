@@ -18,13 +18,57 @@
     </head>
     <body class="home">
     	<div id="fb-root"></div>
-		<script>(function(d, s, id) {
-		  var js, fjs = d.getElementsByTagName(s)[0];
-		  if (d.getElementById(id)) return;
-		  js = d.createElement(s); js.id = id;
-		  js.src = "//connect.facebook.net/th_TH/all.js#xfbml=1&appId=527476593936284";
-		  fjs.parentNode.insertBefore(js, fjs);
-		}(document, 'script', 'facebook-jssdk'));</script>
+		<script>
+		  // Additional JS functions here
+		  window.fbAsyncInit = function() {
+		    FB.init({
+		      appId      : '527476593936284', // App ID
+		      //channelUrl : '//WWW.YOUR_DOMAIN.COM/channel.html', // Channel File
+		      status     : true, // check login status
+		      cookie     : true, // enable cookies to allow the server to access the session
+		      xfbml      : true  // parse XFBML
+		    });
+		
+		    // Additional init code here
+			FB.getLoginStatus(function(response) {
+			  if (response.status === 'connected') {
+			    // connected
+			    load.show();
+			    $.post('fb_login.php',logon);
+			  } else if (response.status === 'not_authorized') {
+			    // not_authorized
+			    //fb_login();
+			  } else {
+			    // not_logged_in
+			    //fb_login();
+			  }
+		  });
+			
+		  // Load the SDK Asynchronously
+		 
+		 };
+		 
+		  (function(d){
+		     var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+		     if (d.getElementById(id)) {return;}
+		     js = d.createElement('script'); js.id = id; js.async = true;
+		     js.src = "//connect.facebook.net/en_US/all.js";
+		     ref.parentNode.insertBefore(js, ref);
+		   }(document));
+		   
+		    function fb_login() {
+		    	preLoad();
+			    FB.login(function(response) {
+			        if (response.authResponse) {
+			            // connected
+						$.post('fb_login.php',logon);
+			        } else {
+			        	unLoad();
+			            // cancelled
+			        }
+			    },{scope: 'email,publish_stream'});
+			}
+		</script>
 		<div id="container"  class="tahoma small" title="เจ้ายุทธภพออนไลน์ | The Hero Project">
 	        <!--[if lt IE 7]>
 	            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
@@ -36,8 +80,8 @@
 				<input type="text" name="member_username" id="member_username" class="login_style" maxlength="40" placeholder="กรอกชื่อผู้ใช้งาน"/>
 				<label for="member_password">รหัสผ่าน :</label>	
 				<input type="password" name="member_password" id="member_password" class="login_style" maxlength="40" placeholder="กรอกรหัสผ่าน" />
-				<div id="login_button" title="คลิกเพื่อเริ่มต้นท่องยุทธภพ(เข้าสู่ระบบ)" /></div>
-				<iframe src="fb_login.php" scrolling="no" width="100px" height="30px"></iframe>
+				<div id="login_button" title="คลิกเพื่อเริ่มต้นท่องยุทธภพ(เข้าสู่ระบบ)" > </div>
+				<div id="fb_login" onclick="fb_login()">Login with Facebook</div>
 			</div>
 		</div>
         <!--<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>-->

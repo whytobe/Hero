@@ -9,14 +9,15 @@ function showItem(items){
 	clearDetail();
 	
 	$.each(items, function(index, item) {
+		
 		if (item.item_active == "0"){
-			console.log(item);
 			itemImg = $('<img class="item-icon" />').attr('src','img/item/'+item.item_id+'.png').attr('title',item.item_name+' - '+item.item_count+' ชิ้น');
 			itemCount = $('<div class="item-num"/>').html(item.item_count);
 			itemHtml = $('<div class="item-icon" />').attr('id',item.character_item_id);
 			itemHtml.append(itemImg).append(itemCount).appendTo('#'+itemZone[item.item_type]);
 		} else if (item.item_active == "1"){
 			itemImg = $('<img class="item-equip"/>').attr('src','img/item/'+item.item_id+'.png').attr('title',item.item_name).attr('id',item.character_item_id);
+			//console.log(item + ' to ' +itemPosition[item.item_position-1]);
 			itemImg.appendTo('#'+itemPosition[item.item_position-1]);
 		}
 		//console.log(JSON.stringify(item));

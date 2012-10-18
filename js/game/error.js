@@ -1,73 +1,77 @@
 var errorMsg = {
 	0 : {
-		title : "Test Error Code 0.",
+		title : "ทดสอบข้อผิดพลาด 0.",
 		description : "This is test for error code."
 	}
 	,1 : {
-		title : "Internal Error",
-		description : "There're some erro with php code"
+		title : "เกิดข้อผิดพลาดร้ายแรง",
+		description : "กรุณาติดต่อผู้ดูแล"
 	}
 		
 	// 1XXX is a general error;
 	,1001 : {
-		title : "Authentication Error.",
-		description : "Authentication Error."
+		title : "เข้าสู่ระบบไม่ถูกต้อง",
+		description : "คุณเข้าสู่ระบบไม่ถูกต้อง ระบบจะนำคุณไปยังหน้าล็อกอิน"
 	}
 	,1002 : {
-		title : "User isn't online.",
-		description : "Please login and try again. May be session time out or duplicate login."
+		title : "เซสชั่นของผู้ใช้ไม่ถูกต้อง",
+		description : "กรุณาล็อกอินใหม่ เนื่องจากเซสชั่นไม่ถูกต้อง อาจเกิดขึ้นได้เนื่องจากมีผู้ล็อกอินซ้อน หรือไม่มีการกระทำใดๆ เกินเวลาที่กำหนด"
 	}
 	,1003 :{
-		title : "Username or Password is/are invalid.",
-		description : "Username or Password is/are invalid."
+		title : "ชื่อผู้ใช้และ/หรือรหัสผ่านไม่ถูกต้อง",
+		description : "ชื่อผู้ใช้ไม่มีอยู่ในฐานข้อมูล หรือไม่ตรงกับรหัสผ่านที่คุณป้อน"
 	}
 	,1004 :{
-		title : "Chat system cannot found any chat message",
-		description : "Cannot pull last chat from database",
+		title : "เกิดข้อผิดพลาดจากการดึงข้อความ",
+		description : "ไม่สามารถดึงข้อความล่าสุดจากระบบได้ กรุณาติดต่อผู้ดูแล",
+	}
+	,1005 : {
+		title : "ไม่สามารถติดต่อกับ Facebook ได้",
+		description : "ไม่สามารถดึงข้อมูลจาก Facebook ได้ กรุณาตรวจสอบว่าคุณได้ล็อกอินเข้าสู่เฟสบุคแล้ว ลองใหม่อีกครั้ง"
 	}
 	
 	// 2XXX is a Character Error;
 	,2001 :{
-		title : "Status point not enough",
-		description : "Status point require or not enough"
+		title : "แต้มสถานะไม่เพียงพอ",
+		description : "กรุณาตรวจสอบว่าแต้มที่ใช้เพิ่มค่าสถานะมีอยู่และเพียงพอต่อการใช้งาน"
 	}
 	,2002 :{
-		title : "Unknown status",
-		description : "Status name invalid"
+		title : "ไม่ทราบสถานะที่ต้องการ",
+		description : "ชื่อสถานะไม่ถูกต้อง หรือคุณกำลังลองดี!!"
 	}
 	,2003 :{
-		title : "Money is not enough",
-		description : "Money less than require."
+		title : "จำนวนเงินไม่พอ",
+		description : "เงินของคุณมีน้อยกว่าที่ระบบต้องการใช้"
 	}
 	// 3XXX is a Event Error;
 	,3001 :{
-		title: "Unknown Event.",
-		description : "Unable to execute unknown event"
+		title: "ไม่รู้จักเหตุการณ์",
+		description : "ไม่สามารถทำงานให้กับเหตุการณ์ที่ไม่รู้จักได้"
 	}
 	,3002 :{
-		title: "Unknown Event Type.",
-		description : "Unable to execute unknown event type."
+		title: "ไม่รู้จักประเภทของเหตุการณ์",
+		description : "ไม่สามารถทำงานให้กับเหตุการณ์ที่ไม่ทราบประเภทได้"
 	}
 	
 	// 4XXX is a Battle Error;
 	,4001 :{
-		title : "Battle session is empty",
-		description : "Cannot access battle's session or battle session is invalid"
+		title : "ไม่มีเซสชั่นของการต่อสู้",
+		description : "ไม่สามารถเชื่อมต่อการต่อสู้ได้เนื่องจากไม่สามารถสร้างเซสชั่นได้"
 	}
 	
 	,4002 :{
-		title : "Cannot found enemy's character information",
-		description : "Enemy's character id is invalid"
+		title : "ไม่พบข้อมูลตัวละครที่ต้องการ",
+		description : "ไม่สามารถดึงข้อมูลตัวละครที่ต้องการได้ หรือตัวละครนั้นไม่มีอยู่"
 	}
 	
 	,4003 :{
-		title : "Duplicate battle request",
-		description : "Battle is being process"
+		title : "เรียกใช้งานต่อสู้ซ้ำ",
+		description : "ระบบกำลังประมวลผลการต่อสู้/ร้องขอ กรุณารอสักครู่"
 	}
 		
 	,4004 :{
-		title : "Target character doesn't in valid map",
-		description : "Requested character is go out of your map or in invalid map"
+		title : "ตัวละครเป้าหมายไม่ได้อยู่แผนที่เดียวกัน",
+		description : "ไม่สามารถต่อสู้กับตัวละครที่อยู่ต่างแผนที่ได้"
 	}
 	
 	,4005 :{
@@ -92,26 +96,36 @@ var errorMsg = {
 	
 	// 5XXX is a Map Error;
 	,5001 :{
-		title: "Unknown Map",
-		description : "Unable to get map data."
+		title: "แผนที่ที่ไม่รู้จัก",
+		description : "ไม่สามารถดึงข้อมูลแผนที่ได้"
 	}
 	
 	//6XXX is a Item Error;
 	,6001 :{
-		title: "Item doesn't exist.",
-		description : "Item doesn't exist or item count is zero."
+		title: "ไม่พบไอเท็มที่ต้องการ",
+		description : "ไอเท็มไม่มีอยู่ หรือจำนวนไอเท็มไม่เพียงพอ"
 	}
 	,6002 :{
-		title : "Unknown item manage type",
-		description : "Manage item doesn't correct type or you're try to crack the item."
+		title : "การจัดการไม่ถูกต้อง",
+		description : "คำสั่งเรียกใช้ไอเท็มไม่ถูกต้อง หรือคุณกำลังลองดี!!"
 	}
 	,6003 :{
-		title : "Unknown item type",
-		description : "Item type is invalid"
+		title : "ไม่ทราบประเภทไอเท็ม",
+		description : "ไอเท็มของประเภทไม่ถูกต้อง"
 	}
 	,6004 :{
-		title : "Cannot use item while battling",
-		description : "Item can not be used while you're battling"
+		title : "ไม่สามารถใช้ไอเท็มขณะต่อสู้ได้",
+		description : "ไม่สามารถใช้ไอเท็มขณะต่อสู้ได้ แนะนำว่าทีหลังอย่าทำอีก !!"
+	}
+	
+	//7XXX is a Skill Error;
+	,7001 :{
+		title : "มีสกิลอยู่แล้ว",
+		description : "สกิลที่่มีอยู่แล้วไม่สามารถเรียนซ้ำได้"
+	}
+	,7002 : {
+		title : "ไม่สามารถเรียนสกิลต่างเมืองได้",
+		description : "เมืองที่ท่านอยู่ไม่มีสกิลที่ต้องการ"
 	}
 	
 }

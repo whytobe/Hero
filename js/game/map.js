@@ -41,7 +41,7 @@ function mapInitial(map_id,path){
 		//Add eventlistener to block for touch event.
 		if (path[i]){
 			block.click(function(){
-				console.log('click @'+($(this).attr('path')));
+				//console.log('click @'+($(this).attr('path')));
 				me.move($(this).attr('path'));
 			});
 		}

@@ -21,20 +21,36 @@
 			//	
 		}
 	
+	function getSkillsInfo(){
+		$result = new Result();
+		$read = new Reader();
+		$read->commandText = 'select character_skill.skill_id,skill_name,skill_lv,skill_count,skill_description,skill_ability,character_skill.updated_date,character_skill.created_date from character_skill,skill where character_skill.skill_id = skill.skill_id and character_id = '.myUser('character_id');
+		$i = 0;
+		while($db = $read->read()){
+			$result->set[mySkill][] = $db;
+			$result->set[mySkill][$i++][skill_ability] = json_decode($db[skill_ability]); 
+		}
+		$read->free();
+		$result->returnData();
+	}
+	
 	function getStatusInfo(){
 		$this->initialCharacter();
 		$result = new Result();
 		$result->set[status] = $this->character;
 		$baseExp = pow((($this->character[character_lv])*2),3);
+		$result->set[status][facebook_id] = $_SESSION[facebook_id];
 		$result->set[status][character_exp] -= $baseExp;
 		$result->set[status][character_max_exp] -= $baseExp;
 		$result->returnData();	
 	}
 	
 	function getCharInfo(){
+		$this->initialCharacter();
 		$result = new Result();
 		$result->set[me] = $this->character;
 		$baseExp = pow((($this->character[character_lv])*2),3);
+		$result->set[me][facebook_id] = $_SESSION[facebook_id];
 		$result->set[me][character_exp] -= $baseExp;
 		$result->set[me][character_max_exp] -= $baseExp;
 		$result->returnData();	
@@ -59,7 +75,21 @@
 		$this->getStatusInfo();
 	
 	}
-	
+	function updateSkill($skills){
+		//Update skill_count
+		foreach ($skills as $skill_id => $skill) {
+			if ($skill[skill_lv] < 10 and $skill[skill_count] > pow((($skill[skill_lv]+1)*2),3)){
+				$skill[skill_lv]++;
+			}
+			$update = new Updater();
+			$update->table = 'character_skill';
+			$update->set[skill_count] = $skill[skill_count];
+			$update->set[skill_lv] = $skill[skill_lv];
+			$update->where[skill_id] = $skill_id;
+			$update->where[character_id] = $this->character[character_id];
+			$update->execute();
+		}
+	}
 	function updateStatus(){
 		$DEFAULT_ATK_DELAY = 3; // หน่วงเวลาโจมตีพื้นฐาน
 		$DEFAULT_MATK_DELAY = 5; // หน่วงเวลาโจมตีเวทย์พื้นฐาน
@@ -187,6 +217,7 @@
 			$this->character = $data->read();
 			$this->character[character_max_exp] = $this->maxExp();
 			$data->free();	
+			
 			/*$character = $data->read();
 			foreach ($character as $key => $value){
 				if ($value)	$this->character[$key] = $value;

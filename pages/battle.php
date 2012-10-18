@@ -1,6 +1,3 @@
-<?php
-    
-?>
 <div style="width:800px;height:600px;" id='battle_box'>
 	<div id="battle_info">
 		<div id="my_info">

@@ -22,7 +22,7 @@
 		$insert->set[item_id] = $item[item_id];
 		if ($item[item_type] == 2) {
 			$insert->set[item_count] = 1;
-			for ($i=0;i<$qty;$i++){
+			for ($i=0;$i<$qty;$i++){
 				$insert->execute();
 			}
 		} else {
@@ -64,7 +64,7 @@
 	function getItem(){
 		$result = new Result();
 		$reader = new Reader();
-		$reader->commandText = 'select character_item_id,character_item.item_id,item_type,item_name,item_count,item_lv,item_active from character_item,item where character_item.item_id = item.item_id and item_count > 0 and item_sale = 0 and character_item.character_id = '.myUser('character_id');
+		$reader->commandText = 'select character_item_id,character_item.item_id,item_type,item_name,item_count,item_lv,item_active,item_position from character_item,item where character_item.item_id = item.item_id and item_count > 0 and item_sale = 0 and character_item.character_id = '.myUser('character_id');
 		if ($reader->hasRow()){
 			while ($db = $reader->read()){
 				$result->set[character_item][] = $db;

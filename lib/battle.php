@@ -55,9 +55,9 @@
 			$reader->free();
 			$battleResult = split('-', $this->battle[battle_result]);
 			$battleCount = count($battleResult);
-			if (($battleCount - $this->round) > 2 ){
+			/*if (($battleCount - $this->round) > 2 ){
 				$this->round = $battleCount;
-			}
+			}*/
 			for ($i = $this->round;$i<$battleCount;$i++){
 				if ($battleResult[$i]){
 					$result = new Result();
@@ -123,11 +123,27 @@
 			$result = new Result();
 			$result->set[result][win] = $winner;
 			$result->returnData();
-			if ($winner === true) {
+			if ($winner == true) {
 				$this->getMoney();
 				$this->getItem();
 				$this->getExp();				
-			} 
+			} else {
+				if (myUser('character_pulse') <= 0){
+					myUser()->character[character_pulse] = 1;
+					myUser()->character[map_id] = myUser('character_save_map');
+					myUser()->save();
+					$result = new Result();
+					$result -> set[refresh] = true;
+					$result->returnData();
+					/*myUser()->initialCharacter();
+					myUser()->getCharInfo();
+					myUser()->getMySkill();
+					getMapInfo();*/
+					
+				}
+			}
+			myUser()->updateSkill($this->mySkill);
+			
 			$this->clearBattleSession();
 		}
 		function getMoney(){
@@ -196,7 +212,7 @@
 			return $val * ((75+(rand(0,50)))/100);
 		}
 				
-		function getDamage($skill_id){
+		function getMonsterDamage($skill_id){
 			if ($this->battle[battle_request] == 2 && $this->delay <= microtime(true)){
 				$result = new Result();	
 				$skill = json_decode($this->mySkill[$skill_id][skill_ability]);
@@ -263,7 +279,7 @@
 		
 		function calcDmg($magic,$attack,$skillmultiply){
 			//$skillmultiply = $skill->skill_damage[$this->mySkill[$skill_id][skill_lv] -1];
-			if ($magic == 0){
+			//if ($magic == 0){
 				$myAtk = 0;
 				$enemyDef = 0;
 				if ($attack) {
@@ -298,11 +314,11 @@
 					$returnResult[dmg] = 'miss';
 					$returnResult[type] = 'miss';
 				}	
-			}
+			//}
 			return $returnResult[dmg];
 		}
 		
-		function getMonsterDamage($skill_id){
+		function getDamage($skill_id){
 			if ($this->battle[battle_request] == 2 && $this->delay <= microtime(true)){
 				$result = new Result();	
 				$skill = json_decode($this->mySkill[$skill_id][skill_ability]);
@@ -327,11 +343,12 @@
 										$my_use_value -= (myUser()->character['character_'.$key] - myUser()->character['character_max_'.$key]);
 									}
 								} 
+								$result->set[result][$this->round][my][use_attr][$key] = $my_use_value;
 							} else {
 								$skill_id = 0;
 								$skill = json_decode($this->mySkill[$skill_id][skill_ability]);
 							}
-							$result->set[result][$this->round][my][use_attr][$key] = $my_use_value;
+							
 						}
 					}
 					
@@ -376,14 +393,14 @@
 							if (isset($this->monster)){
 								$this->monster['monster_'.$key] += $enemy_get_value;
 							} else {
-								$this->enemy['enemy_'.$key] += $enemy_get_value;
+								$this->enemy['character_'.$key] += $enemy_get_value;
 							}
 							
 							if (isset($this->enemy)){
-								if (isset($this->enemy['enemy_max_'.$key])){
-									if ($this->enemy['enemy_'.$key] > $this->enemy['enemy_max_'.$key]){
-										$this->enemy['enemy_'.$key] = $this->enemy['enemy_max_'.$key];
-										$enemy_get_value -= $this->enemy['enemy_'.$key] - $this->enemy['enemy_max_'.$key];
+								if (isset($this->enemy['character_max_'.$key])){
+									if ($this->enemy['character_'.$key] > $this->enemy['character_max_'.$key]){
+										$this->enemy['character_'.$key] = $this->enemy['character_max_'.$key];
+										$enemy_get_value -= $this->enemy['character_'.$key] - $this->enemy['character_max_'.$key];
 									}
 								} 
 							}
@@ -402,21 +419,21 @@
 								if (isset($this->monster)){
 									$this->monster['monster_'.$key] -= $enemy_use_value;
 								} else {
-									$this->enemy['enemy_'.$key] -= $enemy_use_value;
+									$this->enemy['character_'.$key] -= $enemy_use_value;
 								}
 							} else {
 								$enemy_use_value = $this->calcDmg($this->mySkill[$skill_id][skill_type],true, $enemy_use_value);
 								if (isset($this->monster)){
 									$this->monster['monster_'.$key] -= $enemy_use_value;
 								} else {
-									$this->enemy['enemy_'.$key] -= $enemy_use_value;
+									$this->enemy['character_'.$key] -= $enemy_use_value;
 								}
 							}							
 							if (isset($this->enemy)){
-								if (isset($this->enemy['enemy_max_'.$key])){
-									if ($this->enemy['enemy_'.$key] > $this->enemy['enemy_max_'.$key]){
-										$this->enemy['enemy_'.$key] = $this->enemy['enemy_max_'.$key];
-										$enemy_use_value -= $this->enemy['enemy_'.$key] - $this->enemy['enemy_max_'.$key];
+								if (isset($this->enemy['character_max_'.$key])){
+									if ($this->enemy['character_'.$key] > $this->enemy['character_max_'.$key]){
+										$this->enemy['character_'.$key] = $this->enemy['character_max_'.$key];
+										$enemy_use_value -= $this->enemy['character_'.$key] - $this->enemy['character_max_'.$key];
 									}
 								} 
 							}
@@ -431,7 +448,19 @@
 				$result->set[result][$this->round][lv] = $this->mySkill[$skill_id][skill_lv];
 				$result->returnData();
 				
+				if (isset($this->enemy)){
+					//$this->enemy['character_pulse'] = $this->enemy['character_pulse'] - $result->set[result][$this->round][dmg];
 				
+					//Update Enemy Pulse/Soul
+					$update = new Updater();
+					$update->table = 'characters';
+					$update->set[character_pulse] = $this->enemy['character_pulse'];
+					$update->set[character_soul] = $this->enemy['character_soul'];
+					$update->where[character_id] = $this->enemy['character_id'];
+					$update->execute();
+					
+				}
+				$this->mySkill[$skill_id][skill_count]++;
 				$updater = new Updater();
 				$updater->table = 'character_battle';
 				//$result->set[result][$this->round][s_id] = $skill_id;
@@ -450,9 +479,18 @@
 				$microtime = microtime(true);
 				while ($this->monster_delay < $microtime) {
 				//for ($now  = $this->monster_delay; $now < $microtime; $now = +$this->monster[monster_atk_delay] ) {
-					$result = new Result();	
+					$result = new Result();
+					
 					$skill_id = 0;
 					$skill_level = 1;
+					$mSkill = null;
+					foreach ($this->monster_skill as $key => $value) {
+						$mSkill[] = $key;
+					}
+					
+					$skill_id = $this->monster_skill[$mSkill[floor(rand(0,count($mSkill)-1))]][skill_id];
+					$skill_level = $this->monster_skill[$skill_id][skill_lv];
+					
 					$skill = null;
 					$skill = json_decode($this->monster_skill[$skill_id][skill_ability]);
 					//print_r($skill);
@@ -549,8 +587,8 @@
 		
 		function attack($skill_id){
 			if (!$this->mySkill[$skill_id]) $skill_id = 0; // Set skill to 0 when skill_id is invalid.
-			if (isset($this->enemy)) $this->getDamage($skill_id);
-			else if (isset($this->monster)) $this->getMonsterDamage($skill_id);
+			//if (isset($this->enemy)) $this->getDamage($skill_id);
+			if (isset($this->monster) or isset($this->enemy)) $this->getDamage($skill_id);
 			else {
 				$result = new Result();
 				$result->errorCode(4005);
@@ -559,7 +597,7 @@
 		
 		function getSkillInfo(){
 			$reader = new Reader();
-			$reader->commandText = 'select skill.skill_id,skill_lv,skill_name,skill_ability from skill,character_skill where character_skill.skill_id = skill.skill_id and character_skill.character_id = '.myUser('character_id');
+			$reader->commandText = 'select skill.skill_id,skill_lv,skill_name,skill_ability,skill_count from skill,character_skill where character_skill.skill_id = skill.skill_id and character_skill.character_id = '.myUser('character_id');
 			while ($db = $reader->read()){
 				$this->mySkill[$db[skill_id]] = $db;
 			}
@@ -585,6 +623,7 @@
 				$skillReader->commandText = 'select * from skill where skill_id in ('.$implodeMonsterSkill.')';
 				while ($dbSkill = $skillReader->read()){
 					$this->monster_skill[$dbSkill[skill_id]] = $dbSkill;
+					$this->monster_skill[$dbSkill[skill_id]][skill_lv] = floor(rand(1,10));
 				}
 			} else {
 				$result = new Result();
@@ -595,7 +634,7 @@
 		
 		function getEnemyInfo(){
 			$reader = new Reader();
-			$reader->commandText = 'select * from characters where character_id = '.((is_array($this->enemy))? $this->enemy[character_id] : $this->enemy);
+			$reader->commandText = 'select characters.*,member_facebook_id from characters,member where characters.member_id = member.member_id and character_id = '.((is_array($this->enemy))? $this->enemy[character_id] : $this->enemy);
 			if ($db = $reader->read()){
 				$this->enemy = $db;
 			} else {

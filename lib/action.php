@@ -6,11 +6,12 @@ require_once 'event.php';
 require_once 'member.php';
 require_once 'battle.php';
 require_once 'chat.php';
+require_once 'skill.php';
 require_once 'character.php';
 session_start();
 
 header('Content-type: application/json');
-header('charset=utf-8');
+//header('charset=utf-8');
 // Include Library if needed.
 
 //require_once 'facebook.php';
@@ -88,6 +89,9 @@ function menu($data){
 			break;
 		case 'status' :
 			myUser()->getStatusInfo();
+			break;
+		case 'skill' :
+			myUser()->getSkillsInfo();
 			break;
 	}
 }

@@ -4,6 +4,7 @@
 		//$chat_text = addslashes($chat_text);
 		//$chat_text = preg_replace ( "'<[^>]+>'U", "", $data[text]);
 		if ($chat_text != ''){
+			myUser()->setActive('กำลังพูดคุย...');
 			$insert = new Inserter();
 			$insert->table ='chat';
 			$insert->set[character_id] = myUser('character_id');

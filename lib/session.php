@@ -9,11 +9,10 @@
 	session_start();
 	header('Content-type: application/json');
 	//header('charset=utf-8');
-	$insert = new Inserter();
-	$insert->table = 'characters';
-	$insert->set[character_name] = 'newcha';
+
+	print_r($_SESSION);
+	echo sha1('Hello World Hello WorldHello WorldHello WorldHello WorldHello WorldHello WorldHello WorldHello WorldHello WorldHello WorldHello WorldHello WorldHello WorldHello WorldHello WorldHello WorldHello World');
 	
-	//print_r($_SESSION);
 	//unset($_SESSION[battle]);
 	//echo microtime(true);
 	//echo substr('test', 0,-1)

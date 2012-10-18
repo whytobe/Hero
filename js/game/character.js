@@ -34,7 +34,13 @@ function Character(character_model,isMe){
 	this.isMe = (typeof isMe !== 'undefined')? isMe : false;
 	
 	this.model = (this.isMe)? $('<div class="Character me"/>') : $('<div class="Character"/>');
-	this.model.css({'background-image':'url(img/char/char_'+this.type+'.png)'});
+	if (this.type != 99){
+		this.model.css({'background-image':'url(img/char/char_'+this.type+'.png)'});	
+	} else {
+		this.model.css({'background-image':'url(img/char/'+this.type+'.gif)'});
+		this.model.addClass('gm');
+	}
+	
 	//this.model = $('<div id="char_'+this.id+'" class="Character"/>');
 	this.model.css({
 		top : this.offset.top + 'px',

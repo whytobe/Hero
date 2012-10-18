@@ -31,6 +31,7 @@
 						$result -> returnData();
 						$myUser->initialCharacter();
 						$myUser->getCharInfo();
+						$myUser->getMySkill();
 						getMapInfo();
 						echo json_encode($GLOBALS[result]);
 						exit();

@@ -62,6 +62,7 @@
 				changeCharacter();
 			}
 			$(document).ready(function(){
+				parent.unLoad();
 				randomCharacter();
 				$('#createChar').on('click',function(){
 					action('newCharacter',{character_name:$('#character_name').val(),character_type:$('#char_type').attr('type')},logon);

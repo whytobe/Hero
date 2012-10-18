@@ -23,6 +23,7 @@ function handle(response){
 	if (response.status) showStatus(response.status); // Show status detail.
 	if (response.chat) gotChat(response.chat);
 	if (response.skill) gotSkill(response.skill);
+	if (response.mySkill) showMySkill(response.mySkill);
 	if (waitForBattle && !response.notice){
 		load.update('ยกเลิกการต่อสู้เนื่องจาก<br/>คู่ต่อสู้ได้ปฏิเสธการต่อสู้ ยกเลิกคำร้องหรือไม่ตอบรับในเวลาที่กำหนด');
 		waitForBattle = false;
@@ -30,7 +31,7 @@ function handle(response){
 	} 
 }
 function gotSkill(response){
-	if (typeof me !== 'undefined') me.skill = response;
+	if (typeof me !== 'undefined' && me != null) me.skill = response;
 }
 function showChatBox(){
 	$('#chat_list').toggle();
@@ -112,7 +113,11 @@ function sendChat(chat_text){
 	if (chat_text != ''){
 		me.chat(chat_text,new Date());
 		action('sendChat',{text:chat_text});
+	} else {
+		$('#chat_list').toggle();	
 	}
+	$('#chat_text').val('');
+	
 }
 function gotChat(response){
 	$.each(response, function(index,chat) {

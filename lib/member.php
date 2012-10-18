@@ -48,9 +48,9 @@
 		
 		$backpackSkill = array(
 			0=>1, // หมัดเปล่าระดับ 1
-			1=>1,
-			2=>1,
-			3=>1
+			1=>1, // ลมปราณระดับ 1
+			//2=>1,
+			//3=>1
 		);
 		foreach ($backpackSkill as $key => $value) {
 			$insert = new Inserter();
@@ -81,14 +81,19 @@
 	}
 	
 	function memberLogin($data){
-		if ($data[member_username] and $data[member_password]){
+		if (($data[member_username] and $data[member_password]) or $data[member_facebook_id]){
 			$reader = new Reader();
-			$reader->commandText = 'select member_id from member where member_username = \''.$data[member_username].'\' and member_password = \''.$data[member_password].'\' limit 1';
+			if (($data[member_username] and $data[member_password])) {
+				$reader->commandText = 'select member_id from member where member_username = \''.$data[member_username].'\' and member_password = \''.$data[member_password].'\' limit 1';
+			} else {
+				$reader->commandText = 'select member_id from member where member_username is null and member_password is null and member_facebook_id = '.$data[member_facebook_id].' limit 1';
+				$_SESSION[facebook_id] = $data[member_facebook_id];
+			}
 			if ($db = $reader->read()){
 				$_SESSION[member] = $data;
 				$_SESSION[member][member_id] = $db[member_id];
 				$reader = new Reader();
-				$reader->commandText = 'select character_id from characters,member where characters.member_id = member.member_id and member_username = \''.$data[member_username].'\' and member_password = \''.$data[member_password].'\' limit 1';
+				$reader->commandText = 'select character_id from characters,member where characters.member_id = member.member_id and member.member_id = '. $db[member_id].' limit 1';
 				if ($db = $reader->read()){
 					$char[character_id] = $db[character_id];
 					$char[character_online_unique] = sha1($char[character_last_active] = date('c'));

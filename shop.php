@@ -222,7 +222,9 @@ span.namt{
             </tr>
         </table>
     </div>
-    
+    <script>
+    	parent.unLoad();
+    </script>
     
 </body>
 </html>

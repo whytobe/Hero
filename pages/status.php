@@ -3,7 +3,7 @@
 			<br />
 			<center><table cellpadding=0 cellspacing=0 border=0 width="100%">
 				<tr height="50px">
-					<td id="item-img" class="midcen">รูปผู้เล่น<br />50 x 50px</td>
+					<td id="item-img" class="midcen photo">รูปผู้เล่น<br />50 x 50px</td>
 					<td id="item-mgr" class="midcen" colspan=2></td>
 				</td>
 				<tr height="120px">
@@ -17,23 +17,6 @@
 					</td>
 				</tr>
 				<tr>
-				<!--<th align=center valign=middle colspan=3 height=25px style='color:#258'>อุปกรณ์สวมใส่</th>
-				</tr>
-				<tr>
-					<td id="gloves" class='equip-slot midcen'></td>
-					<td id="head" class='equip-slot midcen'></td>
-					<td id="garment" class='equip-slot midcen'></td>
-				</tr>
-				<tr>
-					<td id="righthand" class='equip-slot midcen'></td>
-					<td id="body" class='equip-slot midcen'></td>
-					<td id="lefthand" class='equip-slot midcen'></td>
-				</tr>
-				<tr>
-					<td id="acc1" class='equip-slot midcen'></td>
-					<td id="foots" class='equip-slot midcen'></td>
-					<td id="acc2" class='equip-slot midcen'></td>
-				</tr>-->
 			</table></center>
 		</div>
 		<div style="display:block;float:right;width:60%;">

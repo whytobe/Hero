@@ -9,7 +9,7 @@ var pulse_color = "FF0000" ;
 var soul_color = "486DE7";
 var exp_color = "000000";
 var itemColor = ['#CCCCBB','#33CCBB','#008844'];
-var mute = false;
+var mute = (typeof getCookie('mute') !== 'undefined')? (getCookie('mute') == "true")? true : false : false;
 var pageHTML = {
 	//<div id="preload"><div class="centerscreen"><img src="img/preload.gif" />
 	'item' : '<div style="width:800px;height:500px;margin:0 auto"><div style="display:block;float:left;width:40%;"><br/><center><table cellpadding=0 cellspacing=0 border=0><tr height="30px"><td colspan=2 id="item-name"></td></tr><tr height="50px"><td id="item-img"class="midcen"></td><td id="item-mgr"class="midcen"colspan=2>จัดการไอเท็ม</td></td><tr height="120px"><td id="item-info"colspan=3>Item info</td></tr><tr><td id="gloves"class="equip-slot midcen"></td><td id="head"class="equip-slot midcen"></td><td id="garment"class="equip-slot midcen"></td></tr><tr><td id="righthand"class="equip-slot midcen"></td><td id="body"class="equip-slot midcen"></td><td id="lefthand"class="equip-slot midcen"></td></tr><tr><td id="acc1"class="equip-slot midcen"></td><td id="foots"class="equip-slot midcen"></td><td id="acc2"class="equip-slot midcen"></td></tr></table></center></div><div style="display:block;float:right;width:60%;"><br/><table cellpadding=0 cellspacing=0 border=0 width="100%"><tr><td class="item-list-head midcen use"style="background:#3cb;">ใช้งาน<td></tr><tr><td id="useItem"class="item-list use"colspan=3></td></tr><tr height="5px"></tr><tr><td class="item-list-head midcen equip"style="background:#084;">สวมใส่<td></tr><tr><td id="equipItem"class="item-list equip"colspan=3></td></tr><tr height="5px"></tr><tr><td class="item-list-head midcen unuse"style="background:#ccb;">ทั่วไป<td></tr><tr><td id="unuseItem"class="item-list unuse"colspan=3></td></tr></table></div><br style="clear:both"/></div>'
@@ -18,7 +18,40 @@ var pageHTML = {
 }
 $('.hideButton').click(toggleUserBar);
 
+/* COOKIE */
+
+function setCookie(c_name,value,exdays)
+{
+var exdate=new Date();
+exdate.setDate(exdate.getDate() + exdays);
+var c_value=escape(value) + ((exdays==null) ? "" : "; expires="+exdate.toUTCString());
+document.cookie=c_name + "=" + c_value;
+}
+
+function getCookie(c_name)
+{
+var i,x,y,ARRcookies=document.cookie.split(";");
+for (i=0;i<ARRcookies.length;i++)
+{
+  x=ARRcookies[i].substr(0,ARRcookies[i].indexOf("="));
+  y=ARRcookies[i].substr(ARRcookies[i].indexOf("=")+1);
+  x=x.replace(/^\s+|\s+$/g,"");
+  if (x==c_name)
+    {
+    return unescape(y);
+    }
+  }
+}
+
+/*COOKIE */
+
+function isInt(n) {
+   return typeof n === 'number' && parseFloat(n) == parseInt(n, 10) && !isNaN(n);
+}
+
+
 function playSound(filename,loop){
+
 	soundHandle = document.getElementById('soundHandle');
 	soundHandle.src = 'sound/'+filename+'.ogg';
 	if (!mute) {
@@ -27,6 +60,12 @@ function playSound(filename,loop){
 	}
 }
 $(document).ready(function(){
+	//mute = (typeof getCookie('mute') !== 'undefined')? getCookie('mute') : mute;
+	if (!mute) {
+		$('.muteButton').children().attr('class','ui-icon ui-icon-volume-on');
+	} else {
+		$('.muteButton').children().attr('class','ui-icon ui-icon-volume-off');
+	}
 	$('.muteButton').click(function(){
 		muteIcon = $(this).children();
 		soundHandle = document.getElementById('soundHandle');
@@ -38,6 +77,7 @@ $(document).ready(function(){
 			muteIcon.attr('class','ui-icon ui-icon-volume-off');
 		}
 		mute = !mute;
+		setCookie('mute',mute,999);
 	});
 });
 function toggleUserBar(){
@@ -66,7 +106,7 @@ function Indicator(type,now,max){
 			indHead = "ค่าประสบการณ์";
 			break;
 	}
-	$('.'+type+'_indicator').animate({'width':(now/max*100)+'%'},'slow').attr('title',indHead+" : "+now+"/"+max+" ("+(now/max*100).toFixed(0)+"%)");
+	$('.'+type+'_indicator').animate({'width':(now/max*100)+'%'},{ duration: 'slow', queue: false }).attr('title',indHead+" : "+now+"/"+max+" ("+(now/max*100).toFixed(0)+"%)");
 	//$('.'+type+'_indicators').animate({'width':(now/max*100)+'%'},'slow').attr('title',indHead+" : "+now+"/"+max+" ("+(now/max*100).toFixed(0)+"%)");
 	//$('#'+type).html("<div style='width:"++"%;height:100%;background-color:#"+indColor+"' title='"+indHead+" : "+now+"/"+max+" ("+(now/max*100).toFixed(0)+"%)'></div>");
 }
@@ -151,6 +191,7 @@ function LoadInfo(){
 		,beforeShow : function(){
 			load.close();
 			if (typeof pauseGame !== 'undefined') pauseGame();
+			preLoad('.fancybox-wrap');
 			//pauseGame();
 		}
 		,beforeClose : function(){
@@ -393,7 +434,7 @@ class:'effect'
 }
 
 function removeMovie(movieId){
-	console.log('Effect remove : '+movieId);
+	//console.log('Effect remove : '+movieId);
 	$('#'+movieId).remove();
 }
 
