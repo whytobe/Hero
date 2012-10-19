@@ -25,7 +25,7 @@
 				<tr>
 					<td id="acc1" class="equip-slot midcen"></td>
 					<td id="foots" class="equip-slot midcen"></td>
-					<td id="acc2" class="equip-slot midcen"></td>
+					<td class="equip-slot midcen"></td>
 				</tr>
 			</table></center>
 		</div>

@@ -36,6 +36,7 @@
 	
 	function getStatusInfo(){
 		$this->initialCharacter();
+		$this->updateStatus();
 		$result = new Result();
 		$result->set[status] = $this->character;
 		$baseExp = pow((($this->character[character_lv])*2),3);
@@ -91,8 +92,29 @@
 		}
 	}
 	function updateStatus(){
-		$DEFAULT_ATK_DELAY = 3; // หน่วงเวลาโจมตีพื้นฐาน
-		$DEFAULT_MATK_DELAY = 5; // หน่วงเวลาโจมตีเวทย์พื้นฐาน
+		$DEFAULT_ATK_DELAY = 5; // หน่วงเวลาโจมตีพื้นฐาน
+		$DEFAULT_MATK_DELAY = 7; // หน่วงเวลาโจมตีเวทย์พื้นฐาน
+		$reader = new Reader();
+		$reader->commandText = 'select item_ability from character_item,item where character_item.item_id = item.item_id and character_id = '.$this->character[character_id].' and item_active = 1';
+		$all_stat_text = 'str,agi,vit,dex,int,luk';
+		$all_stat = split(',',$all_stat_text);
+		//back up status
+		$old_stat = null;
+		foreach ($all_stat as $key => $value) {
+			$old_stat['character_'.$value] = $this->character['character_'.$value];
+		}
+		
+		while ($db = $reader->read()){
+			$abilitys[] = json_decode($db[item_ability]);
+		}
+		if ($abilitys){
+			foreach ($abilitys as $key => $ability) {
+				foreach ($ability as $key => $value) {
+					if (strpos($all_stat_text,$key) !== false) $this->character['character_'.$key] += $value;
+				}
+			}
+		}
+		//$this->getItemAbility();
 		$this->character[character_max_pulse] = ($this->character[character_lv]*50)+($this->character[character_vit]*35)+(floor($this->character[character_vit]/2)^2);
 		$this->character[character_max_soul] = ($this->character[character_lv]*20)+($this->character[character_int]*14)+(floor($this->character[character_int]/2)^2);
 		$this->character[character_atk] = $this->character[character_str]+(($this->character[character_str]/5)*5)+($this->character[character_lv]*2);
@@ -101,10 +123,25 @@
 		$this->character[character_flee] = $this->character[character_agi]+(($this->character[character_agi]/5)*5)+($this->character[character_lv]*2);
 		$this->character[character_hit] = $this->character[character_dex]+(($this->character[character_dex]/5)*7)+($this->character[character_lv]*2);
 		$this->character[character_drop_rate] = ($this->character[character_luk]+(($this->character[character_luk]/5)*9))/10;
-		$this->character[character_atk_delay] = number_format(($DEFAULT_ATK_DELAY*100/($this->character[character_lv]+100+($this->character[character_agi]*3)+(($this->character[character_agi]/9)^2))), 2, '.', ',');
-		$this->character[character_matk_delay] = number_format(($DEFAULT_MATK_DELAY*100/($this->character[character_lv]+100+($this->character[character_dex]*3)+(($this->character[character_dex]/7)^2))), 2, '.', ',');
+		$this->character[character_atk_delay] = 1+number_format(($DEFAULT_ATK_DELAY*100/($this->character[character_lv]+100+($this->character[character_agi]*2)+(($this->character[character_agi]/9)^2))), 2, '.', ',');
+		$this->character[character_matk_delay] = 1+number_format(($DEFAULT_MATK_DELAY*100/($this->character[character_lv]+100+($this->character[character_dex]*2)+(($this->character[character_dex]/7)^2))), 2, '.', ',');
 		$this->character[character_lucky] = $this->character[character_luk]/2;
-		$this->getItemAbility();
+		
+		$after_stat_text = 'max_pulse,max_soul,atk,def,matk,flee,hit,drop_rate,atk_delay,matk_delay,lucky';
+		$after_stat = split(',',$after_stat_text);
+		
+		if ($abilitys){
+			foreach ($abilitys as $key => $ability) {
+				foreach ($ability as $key => $value) {
+					if (strpos($after_stat_text,$key) !== false) $this->character['character_'.$key] += $value;
+				}
+			}
+		}
+		
+		// restore status;
+		foreach ($all_stat as $key => $value) {
+			$this->character['character_'.$value] = $old_stat['character_'.$value]; 
+		}
 		if ($this->character['character_pulse'] > $this->character['character_max_pulse']) $this->character['character_pulse'] = $this->character['character_max_pulse'];
 		if ($this->character['character_soul'] > $this->character['character_max_soul']) $this->character['character_soul'] = $this->character['character_max_soul'];
 		
@@ -112,14 +149,8 @@
 	}
 
 	function getItemAbility(){
-		$reader = new Reader();
-		$reader->commandText = 'select item_ability from character_item,item where character_item.item_id = item.item_id and character_id = '.$this->character[character_id].' and item_active = 1';
-		while ($db = $reader->read()){
-			$ability = json_decode($db[item_ability]);
-			foreach ($ability as $key => $value) {
-				$this->character['character_'.$key] += $value;
-			}
-		}
+		
+		
 		
 	}
 	
@@ -195,11 +226,12 @@
 		$this->character[character_max_exp] = $this->maxExp();
 		$this->character[character_exp] += $exp;
 		$levelup = false;
-		while ($this->character[character_exp] >= $this->character[character_max_exp]){
+		while ($this->character[character_exp] > $this->character[character_max_exp]){
 			$this->character[character_lv]++;
 			$this->character[character_status_point] += 10+((ceil($this->character[character_lv]/10)+1)*2);
 			$this->character[character_max_exp] = $this->maxExp();			
 			$levelup = true;
+			//test
 		} 
 		$this->updateStatus();
 		if ($levelup) {

@@ -106,9 +106,10 @@ function itemDetail(data){
 									'background':"url('img/item/"+data.item_id+".png') center no-repeat",
 									'box-shadow':'0 0 20px '+itemColor[data.item_type]+' inset'
 								});
-	$('#item-info').html('<b>จำนวน</b> : '+data.item_count+' ชิ้น<br/><b>ราคา</b> : '+(data.item_price/2)+' ยุน<br/><b>รายละเอียด</b> :<br/>'+data.item_description);
+	$('#item-info').html('<b>จำนวน</b> : '+data.item_count+' ชิ้น<br/><b>ราคา</b> : '+(data.item_price/2)+' ยุน'+ ((data.item_ability)? '<br/><b>ความสามารถ : </b>' + data.item_ability : '' )+'<br/><b>รายละเอียด</b> :<br/>'+data.item_description);
 	$('#item-name').html(data.item_name);
 	if (data.item_type != 0) $('#item-mgr').html('<div class="manage use" manage="use">ใช้งาน/สวมใส่/ถอด</div><div class="manage drop" manage="drop">โยนทิ้ง</div>').attr('uid',data.character_item_id);
+	else $('#item-mgr').html('<div class="manage drop" manage="drop">โยนทิ้ง</div>').attr('uid',data.character_item_id);
 	$('#item-mgr .manage').off().on('click',function(){
 		item_id = $(this).parent().attr('uid');
 		manage_type = $(this).attr('manage');

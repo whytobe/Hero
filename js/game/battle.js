@@ -162,6 +162,7 @@ function Battle(){
 			}
 			if (typeof data.enemy.get_attr !== 'undefined'){
 				$.each(data.enemy.get_attr, function(index,value) {
+					addEffect(1,'#enemy_info .enemyEffect');
 					battleHTML = $('<div class="battleRound"><div class="roundDetail"><span class="attr"></span><span class="dmgTo"></span> จาก <span class="skill"></span> <span class="damage"></span></div></div>');
 					battleHTML.find('.skill').html(data.name+'<span class="skill_level">'+data.lv+'</span>');
 					battleHTML.find('.roundDetail').addClass('enemy');
@@ -217,6 +218,7 @@ function Battle(){
 			}
 			if (typeof data.my.get_attr !== 'undefined'){
 				$.each(data.my.get_attr, function(index,value) {
+					addEffect(1,'#my_info .myEffect');
 					battle.dmgShow(value,'me','get');		
 					battleHTML = $('<div class="battleRound"><div class="roundDetail"><span class="attr"></span><span class="dmgTo"></span> จาก <span class="skill"></span> <span class="damage"></span></div></div>');
 					battleHTML.find('.skill').html(data.name+'<span class="skill_level">'+data.lv+'</span>');
