@@ -279,7 +279,7 @@
 		
 		function calcDmg($magic,$attack,$skillmultiply){
 			//$skillmultiply = $skill->skill_damage[$this->mySkill[$skill_id][skill_lv] -1];
-			//if ($magic == 0){
+			if ($magic == 0){
 				$myAtk = 0;
 				$enemyDef = 0;
 				if ($attack) {
@@ -314,7 +314,36 @@
 					$returnResult[dmg] = 'miss';
 					$returnResult[type] = 'miss';
 				}	
-			//}
+			} else {
+				$myAtk = 0;
+				$enemyDef = 0;
+				if ($attack) {
+					$myAtk = myUser('character_matk');
+					$myHit = myUser('character_hit');
+					if (isset($this->monster)){
+						$enemyDef = $this->monster('monster_def'); 
+						$enemyFlee = $this->monster('monster_flee');
+					} else {
+						$enemyDef = $this->enemy('character_def');
+						$enemyFlee = $this->enemy('character_flee');
+					}
+				} else {
+					$enemyDef = myUser('character_def');
+					$enemyFlee = myUser('character_flee');
+					if (isset($this->monster)){
+						$myAtk = $this->monster('monster_matk');
+						$myHit = $this->monster('monster_hit');
+					} else {
+						$myAtk = $this->enemy('character_matk');
+						$myHit = $this->enemy('character_hit');
+					}
+				}
+				$damage = $this->approx(($myAtk - $enemyDef)*$skillmultiply);
+				$damage = ($damage < 1)? 1 : ceil($damage);
+				$returnResult[dmg] = $damage;
+				$returnResult[type] = 'hit';
+
+			}
 			return $returnResult[dmg];
 		}
 		

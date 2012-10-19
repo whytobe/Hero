@@ -16,6 +16,8 @@
 	margin:10px;
 	display:block;
 	float:left;
+	background-position:center center;
+	background-repeat:no-repeat;
 }
 
 #skill_info .skill_rows .detail{
